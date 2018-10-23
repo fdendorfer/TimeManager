@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - TimeManager</title>
+  <!-- Materialize -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+  <nav class="green">
+    <div class="nav-wrapper">
+      <ul class="left">
+        <li><a asp-page="/OwnTimes/OwnTimes">OwnTimes</a></li>
+        <li><a asp-page="/Controlling">Controlling</a></li>
+        <li><a asp-page="/Users">Users</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- Page content -->
+  <div class="container">
+    @RenderBody()
+    <hr />
+    <footer>
+      <p>ONAX AG - it solutions</p>
+    </footer>
+  </div>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+</body>
+</html>
