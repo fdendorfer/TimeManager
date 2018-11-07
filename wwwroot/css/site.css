@@ -2,14 +2,14 @@ html {
   font-family: 'Roboto', sans-serif;
 }
 
-#absenceForm .datepicker-modal {
+.datepicker-modal {
   max-width: fit-content !important;
 }
 
-#absenceForm .datepicker-modal .datepicker-date-display {
+.datepicker-modal .datepicker-date-display {
   display: none !important;
 }
 
-#absenceForm input[type='text'] {
-  height: 20px;
+input[type='text'], select {
+  height: 20px !important;
 }

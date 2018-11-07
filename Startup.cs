@@ -44,7 +44,7 @@ namespace TimeManager
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Shared/Error");
                 app.UseHsts();
             }
 

@@ -1,6 +1,6 @@
 ﻿@model OwnTimesModel
 @{
-  ViewData["Title"] = "Eigene Zeiten";
+ViewData["Title"] = "Eigene Zeiten";
 }
 <h1>Eigene Zeiten</h1>
 
@@ -31,29 +31,29 @@
         <!--nested Grid-->
         <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Ferien</span>
           </label>
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Militär</span>
           </label>
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Krank</span>
           </label>
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Unfall</span>
           </label>
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Schule</span>
           </label>
           <label>
-            <input type="checkbox"  class="filled-in green reasonCheck" />
+            <input type="checkbox" class="filled-in green reasonCheck" />
             <span><input id="reasonText" type="text" placeholder="Anderer" /></span>
-            
+
           </label>
         </div>
       </div>
@@ -63,7 +63,7 @@
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
-          <input id="approved" type="checkbox" class="filled-in green" />
+          <input id="approved" type="checkbox" class="filled-in green" checked disabled />
           <span></span>
         </label>
       </div>
@@ -74,7 +74,7 @@
 <!-- OvertimeWindow -->
 <div id="overtimeWindow" class="modal" style="height: 600px">
   <div class="modal-content">
-    <h4>Neue Abwesenheit</h4>
+    <h4>Neue Überzeit</h4>
     <div id="overtimeForm" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
       <div>
         <span>Datum:</span>
@@ -88,14 +88,14 @@
       <div>
         <input id="customer" type="text">
       </div>
+      <div>
+        <span>Zuschlag:</span>
+      </div>
       <div class="input-field">
-        <select>
-          @{
-            var line = OwnTimesModel.OvertimeDetail[0];
+        <select disabled>
+          @foreach (var line in OwnTimesModel.OvertimeDetail) {
+          <option>@line</option>
           }
-          <option>
-            @line
-          </option>
         </select>
       </div>
     </div>
