@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using TimeManager.Models;
 
 namespace TimeManager.Database
 {
@@ -9,7 +8,7 @@ namespace TimeManager.Database
   {
 
     //Created with x.udl
-    private static String ConnString = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=TimeManager;Data Source=localhost\\Home";
+    /* private static String ConnString = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=TimeManager;Data Source=localhost\\Home";
     public static UserModel CurrentUser;
 
     public static Boolean Login(String username, String password)
@@ -53,7 +52,7 @@ namespace TimeManager.Database
         return true;
       
       return false;
-    }
+    } */
 
   }
 }

@@ -1,0 +1,29 @@
+﻿@page
+@model IndexModel
+@{ ViewData["Title"] = "Home Page"; }
+@{
+  Validation.RequireField("Username", "Benutzername muss ausgefüllt werden");
+  Validation.RequireField("Password", "Passwort muss ausgefüllt werden");
+  Validation.Add("Username", Validator.StringLength(100, 2, "Der Benutzername muss zwischen 2 und 100 Zeichen lang sein."));
+  Validation.Add("Username", Validator.Regex("^[a-zA-Z0-9]$", "Der Benutzername darf nur Buchstaben und Zahlen enthalten."));
+  Validation.Add("Password", Validator.StringLength(100, 3, "Der Benutzername muss zwischen 2 und 100 Zeichen lang sein."));
+  Validation.Add("Password", Validator.Regex("^[a-zA-Z0-9]$", "Der Benutzername darf nur Buchstaben und Zahlen enthalten."));
+
+  var db = Database.Open("DefaultConnection");
+  var query = "IF( (CONVERT(varchar(100), (DECRYPTBYPASSPHRASE('SECURE1', (SELECT [Password] FROM [dbo].[User] WHERE Username = @username))))) = @password) SELECT t0.[ID], t0.[IdPermission], t0.[Firstname], t0.[Lastname], t0.[Username], CONVERT(varchar(100), (DECRYPTBYPASSPHRASE('SECURE1', [Password]))) AS Password, t0.[Department], t1.[Level] FROM [User] AS t0 INNER JOIN [Permission] AS t1 ON t0.[IdPermission] = t1.[ID] WHERE Username = @username";
+}
+
+<h1>Time Manager der ONAX AG</h1>
+
+<p>Bitte loggen Sie sich ein, um Zeiten zu erfassen oder anzusehen. Falls Sie kein Login haben, wenden Sie sich bitte an den Systemadministrator.</p>
+@if (false) {}
+
+<h2>Login</h2>
+<form method="POST" asp-controller="Home" asp-action="Index">
+  <label>Benutzername</label><br />
+  <input name="Username" required/><br />
+  <label>Passwort</label><br />
+  <input name="Password" required/><br />
+  <button class="btn-small" type="submit" value="Login">Log in</button>
+</form>
+@Html.ValidationSummary("Fehler im Formular:")
