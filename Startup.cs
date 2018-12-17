@@ -30,7 +30,7 @@ namespace TimeManager {
       // Claims Authorization
       services.AddAuthorization(options => {
         options.AddPolicy("IdPermission", policy => policy.RequireClaim("IdPermission"));
-        options.AddPolicy("PermissionNormal", policy => policy.AddRequirements("https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-2.2#requirements"));
+        //options.AddPolicy("PermissionNormal", policy => policy.AddRequirements());
       });
     }
 
