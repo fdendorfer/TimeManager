@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TimeManager.Model;
 
-namespace TimeManager.Model {
+namespace TimeManager.Database {
   public class DatabaseContext : DbContext {
     public DbSet<User> User { get; set; }
     public DbSet<Permission> Permission { get; set; }

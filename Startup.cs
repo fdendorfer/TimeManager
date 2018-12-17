@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,20 +16,27 @@ namespace TimeManager {
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services) {
-      services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-      services.Configure<IdentityOptions>(options => {
-        // Lockout settings
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        options.Lockout.MaxFailedAccessAttempts = 10;
-      });
+      services.AddMvc()
+        .AddRazorPagesOptions(options => {
+          options.Conventions.AuthorizeFolder("/", "PermissionAdvanced");
+          // Set all permissions for the pages
+          options.Conventions.AllowAnonymousToPage("/Index");
+          options.Conventions.AllowAnonymousToPage("/Error");
+        })
+        .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
       // Cookie Authentication
-      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-      // Claims Authorization
+      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+        options.LoginPath = "/Index";
+        options.AccessDeniedPath = "/Error";
+        });
+
+      // Roles Authorization
       services.AddAuthorization(options => {
-        options.AddPolicy("IdPermission", policy => policy.RequireClaim("IdPermission"));
-        //options.AddPolicy("PermissionNormal", policy => policy.AddRequirements());
+        options.DefaultPolicy = new AuthorizationPolicyBuilder("Cookies").RequireAuthenticatedUser().Build();
+        options.AddPolicy("PermissionNormal", policy => policy.RequireRole("Normal", "Advanced", "High"));
+        options.AddPolicy("PermissionAdvanced", policy => policy.RequireRole("Advanced", "High"));
+        options.AddPolicy("PermissionHigh", policy => policy.RequireRole("High"));
       });
     }
 
