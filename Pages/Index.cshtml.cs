@@ -15,8 +15,8 @@ namespace TourManager.Pages {
     public LoginModel Login { get; set; } = new LoginModel();
 
     public async Task<IActionResult> OnPostAsync() {
-      if (ModelState.IsValid) {
-
+      if (ModelState.IsValid) 
+        { 
         using (var db = new DatabaseContext()) {
           var user = db.User.FirstOrDefault(u => u.Username == Login.Username && u.MatchesPassword(Login.Password));
           if (user != null) {
@@ -30,7 +30,7 @@ namespace TourManager.Pages {
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties { };
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties); // To log out await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
+            
             return RedirectToPage("/OwnTimes");
           }
         }

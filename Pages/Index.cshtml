@@ -17,8 +17,10 @@
 
   <label asp-for="Login.Password"></label>
   <span class="red-text" asp-validation-for="Login.Password"></span>
-  <input asp-for="Login.Password" type="password" />
-  
+  <input asp-for="Login.Password" type="password" />s
+
   <button class="btn-small" type="submit" value="Login">Log in</button>
-  <div class="red-text" asp-validation-summary="All"></div>
+  <div class="red-text" asp-validation-summary="ModelOnly"></div>
+  ---------------------------------------------------------------------
+  @Html.ValidationSummary(true)
 </form>
