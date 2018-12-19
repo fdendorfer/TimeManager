@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿@using TourManager.Pages.Shared
 @{
   bool menuAno, menuNormal, menuAdvanced, menuHigh;
   menuAno = menuNormal = menuAdvanced = menuHigh = false;
@@ -17,6 +17,16 @@
     }
   }
 }
+<script type="text/javascript">
+  function logout(e) {
+    e.preventDefault();
+    @{ 
+      var m = new _Pages_Shared__Layout();
+      m.Context.Authentication.SignOutAsync(CookieAuthenticationDefault.AuthenticationScheme);
+    }
+  }
+</script>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -48,6 +58,9 @@
         }
         @if (menuHigh) {
           <li><a href="/Users">Users</a></li>
+        }
+        @if (User.Identity.Name != null) {
+          <li style="position: absolute; right: 0;"><a href="/Logout" onclick="logout(event)">Logout</a></li>
         }
       </ul>
     </div>

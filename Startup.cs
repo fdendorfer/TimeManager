@@ -29,9 +29,10 @@ namespace TimeManager {
 
       // Cookie Authentication
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+        options.Cookie.HttpOnly = false;
         options.LoginPath = "/Index";
         options.AccessDeniedPath = "/Error";
-        });
+      });
 
       // Roles Authorization
       services.AddAuthorization(options => {
@@ -54,6 +55,8 @@ namespace TimeManager {
       app.UseHttpsRedirection();
       app.UseStaticFiles();
 
+      var cookieOptions = new CookieAuthenticationOptions();
+      cookieOptions.Cookie.HttpOnly = false;
       app.UseAuthentication();
 
       app.UseMvc();
