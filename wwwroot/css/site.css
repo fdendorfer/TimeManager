@@ -9,7 +9,3 @@ html {
 .datepicker-modal .datepicker-date-display {
   display: none !important;
 }
-
-input[type='text'], select {
-  height: 20px !important;
-}

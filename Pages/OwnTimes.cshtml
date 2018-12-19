@@ -1,5 +1,6 @@
-﻿@page 
-@model OwnTimesModel 
+﻿@page
+
+@model OwnTimesModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
 
 <h1>Eigene Zeiten</h1>
@@ -8,7 +9,7 @@
 <a class="btn green modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
 
 <!-- AbsenceWindow -->
-<div id="absenceWindow" class="modal" style="height: 600px">
+<div id="absenceWindow" class="modal modal-fixed-footer" style="height: 600px">
   <div class="modal-content">
     <h4>Neue Abwesenheit</h4>
     <div id="absenceForm" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
@@ -20,7 +21,7 @@
       <div>
         <!-- nested Grid -->
         <div id="reasonGrid"
-          style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+             style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
           <label>
             <input type="checkbox" class="filled-in green reasonCheck" />
             <span>Ferien</span>
@@ -57,26 +58,30 @@
       </div>
     </div>
   </div>
+  <div class="modal-footer">
+    <button class="btn-small">OK</button>
+    <button class="btn-small">Abbrechen</button>
+  </div>
 </div>
 
 <!-- OvertimeWindow -->
-<div id="overtimeWindow" class="modal" style="height: 600px">
+<div id="overtimeWindow" class="modal modal-fixed-footer" style="height: 600px">
   <div class="modal-content">
     <h4>Neue Überzeit</h4>
-    <div id="overtimeForm" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
-      <div><span>Datum:</span></div>
-      <div><input id="date" type="text" class="datepicker" /></div>
-      <div><span>Kunde:</span></div>
-      <div><input id="customer" type="text" /></div>
-      <div><span>Zuschlag:</span></div>
-      <div class="input-field">
-        <select disabled>
-          @foreach (var line in OwnTimesModel.OvertimeDetail) {
+    <label for="date">Datum:</label>
+    <input id="date" type="text" class="datepicker" />
+    <label for="customer">Kunde:</label>
+    <input id="customer" type="text" />
+    <label for="addition">Zuschlag:</label>
+      <select id="addition">
+        @foreach (var line in OwnTimesModel.OvertimeDetail) {
           <option>@line</option>
-          }
-        </select>
-      </div>
-    </div>
+        }
+      </select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-small">OK</button>
+    <button class="btn-small">Abbrechen</button>
   </div>
 </div>
 

@@ -1,6 +1,15 @@
-﻿@page 
-@model IndexModel 
+﻿@page
+@model IndexModel
 @{ ViewData["Title"] = "Home Page"; }
+@{ 
+  <text>
+    <script type="text/javascript">
+      if (window.location.pathname == "/") {
+        window.location.href = "/OwnTimes";
+      }
+    </script>
+  </text>
+}
 
 <h1>Time Manager der ONAX AG</h1>
 
@@ -11,16 +20,14 @@
 
 <h2>Login</h2>
 <form method="POST">
-  <label asp-for="Login.Username"></label>
+  <label asp-for="Login.Username">Benutzername</label>
   <span class="red-text" asp-validation-for="Login.Username"></span>
   <input asp-for="Login.Username" />
 
-  <label asp-for="Login.Password"></label>
+  <label asp-for="Login.Password">Passwort</label>
   <span class="red-text" asp-validation-for="Login.Password"></span>
-  <input asp-for="Login.Password" type="password" />s
+  <input asp-for="Login.Password" type="password" />
 
   <button class="btn-small" type="submit" value="Login">Log in</button>
   <div class="red-text" asp-validation-summary="ModelOnly"></div>
-  ---------------------------------------------------------------------
-  @Html.ValidationSummary(true)
 </form>

@@ -18,7 +18,9 @@ namespace TimeManager {
     public void ConfigureServices(IServiceCollection services) {
       services.AddMvc()
         .AddRazorPagesOptions(options => {
-          options.Conventions.AuthorizeFolder("/", "PermissionAdvanced");
+          options.Conventions.AuthorizeFolder("/", "PermissionNormal");
+          options.Conventions.AuthorizeFolder("/Controlling", "PermissionAdvanced");
+          options.Conventions.AuthorizeFolder("/Users", "PermissionHigh");
           // Set all permissions for the pages
           options.Conventions.AllowAnonymousToPage("/Index");
           options.Conventions.AllowAnonymousToPage("/Error");

@@ -7,7 +7,7 @@ namespace TimeManager.Database {
     public DbSet<Permission> Permission { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-      optionsBuilder.UseSqlServer("Server=localhost\\Home;Database=TimeManager;Trusted_Connection=True");
+      optionsBuilder.UseSqlServer("Server=localhost;Database=TimeManager;Trusted_Connection=True");
       //optionsBuilder.UseSqlServer("Server=localhost\\Home;Database=TimeManager;User Id=sa;Password=vawbuNHGNPKCZ77+");
     }
   }
