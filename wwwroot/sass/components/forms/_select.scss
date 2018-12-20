@@ -62,7 +62,7 @@ select {
     }
     position: relative;
     cursor: pointer;
-    background-color: transparent;
+    background-color: $select-background;
     border: none;
     border-bottom: $input-border;
     outline: none;

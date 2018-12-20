@@ -1,16 +1,9 @@
 ﻿@page
 @model IndexModel
 @{ ViewData["Title"] = "Home Page"; }
-@{ 
-  <text>
-    <script type="text/javascript">
-      if (window.location.pathname == "/") {
-        window.location.href = "/OwnTimes";
-      }
-    </script>
-  </text>
+@if(User.Identity.Name != null) {
+  Response.Redirect("/OwnTimes");
 }
-
 <h1>Time Manager der ONAX AG</h1>
 
 <p>

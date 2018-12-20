@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,9 +30,9 @@ namespace TimeManager {
 
       // Cookie Authentication
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
-        options.Cookie.HttpOnly = false;
         options.LoginPath = "/Index";
         options.AccessDeniedPath = "/Error";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
       });
 
       // Roles Authorization

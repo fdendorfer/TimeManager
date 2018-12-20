@@ -1,89 +1,102 @@
-﻿@using TourManager.Pages.Shared
-@{
-  bool menuAno, menuNormal, menuAdvanced, menuHigh;
-  menuAno = menuNormal = menuAdvanced = menuHigh = false;
-
-  if (User.Identity.Name == null) {
-    menuAno = true;
-  } else {
-    if (User.IsInRole("Normal")) {
+﻿@{ 
+  bool menuAno, menuNormal, menuAdvanced, menuHigh; menuAno = menuNormal = menuAdvanced = menuHigh = false;
+  if (User.Identity.Name == null) 
+  { 
+    menuAno = true; 
+  } else 
+  {
+    if (User.IsInRole("Normal")) 
+    {
       menuNormal = true;
-    }
-    if (User.IsInRole("Advanced")) {
-      menuAdvanced = menuNormal = true;
-    }
-    if (User.IsInRole("High")) {
-      menuHigh = menuAdvanced = menuNormal = true;
-    }
+    } 
+    if (User.IsInRole("Advanced")) 
+    { 
+      menuAdvanced = menuNormal = true; 
+    } 
+    if (User.IsInRole("High")) 
+    { 
+      menuHigh = menuAdvanced = menuNormal = true; 
+    } 
   }
 }
-<script type="text/javascript">
-  function logout(e) {
-    e.preventDefault();
-    @{ 
-      var m = new _Pages_Shared__Layout();
-      m.Context.Authentication.SignOutAsync(CookieAuthenticationDefault.AuthenticationScheme);
-    }
-  }
-</script>
-
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@ViewData["Title"] - TimeManager</title>
-  <!-- Materialize -->
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
-  <link rel="stylesheet" href="css/materialize.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TimeManager</title>
+    <!-- Materialize -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+    <link rel="stylesheet" href="css/materialize.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <link rel="stylesheet" href="~/css/site.css" />
-</head>
+    <link rel="stylesheet" href="~/css/site.css" />
+  </head>
 
-<body>
-  <nav>
-    <div class="nav-wrapper">
-      <ul class="left">
-        @if (User.Identity.Name == null) {
-          <li><a href="/">Index</a></li>
-        }
-        @if (menuNormal) {
-          <li><a href="/OwnTimes">OwnTimes</a></li>
-        }
-        @if (menuAdvanced) {
-          <li><a href="/Controlling">Controlling</a></li>
-        }
-        @if (menuHigh) {
-          <li><a href="/Users">Users</a></li>
-        }
-        @if (User.Identity.Name != null) {
-          <li style="position: absolute; right: 0;"><a href="/Logout" onclick="logout(event)">Logout</a></li>
-        }
-      </ul>
+  <body>
+    <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post"></form>
+    <nav>
+      <div class="nav-wrapper">
+        <ul class="left">
+          @if (User.Identity.Name == null) 
+          {
+            <li>
+              <a href="/">Index</a>
+            </li>
+          } 
+          @if (menuNormal) 
+          {
+            <li>
+              <a href="/OwnTimes">OwnTimes</a>
+            </li>
+          } 
+          @if (menuAdvanced) 
+          {
+            <li>
+              <a href="/Controlling">Controlling</a>
+            </li>
+          } 
+          @if (menuHigh) 
+          {
+            <li>
+              <a href="/Users">Users</a>
+            </li>
+          }
+        </ul>
+        <ul class="right">
+          @if (User.Identity.Name != null) 
+          {
+            <li>
+              <span>Hello @User.Identity.Name</span>
+            </li>
+            <li onclick="logoutForm.submit();">
+              <a>Logout</a>
+            </li>
+          }
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Page content -->
+    <div class="container">
+      @RenderBody()
+      <hr />
+      <footer style="position: absolute; bottom: 0;">
+        <p>ONAX AG - it solutions</p>
+      </footer>
     </div>
-  </nav>
 
+    <!-- JQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <!-- Materialize -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-  <!-- Page content -->
-  <div class="container">
-    @RenderBody()
-    <hr />
-    <footer style="position: absolute; bottom: 0;">
-      <p>ONAX AG - it solutions</p>
-    </footer>
-  </div>
-
-  <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-          crossorigin="anonymous"></script>
-  <!-- Materialize -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-  <script src="~/js/site.js" asp-append-version="true"></script>
-
-</body>
-
+    <script src="~/js/site.js" asp-append-version="true"></script>
+  </body>
 </html>
