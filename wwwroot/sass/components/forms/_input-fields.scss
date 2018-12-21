@@ -30,7 +30,7 @@ textarea.materialize-textarea {
   border-radius: 0;
   outline: none;
   height: $input-height;
-  width: 100%;
+  width: calc(100% - #{nth($input-padding, 2)} - #{nth($input-padding, 4)});
   font-size: $input-font-size;
   margin: $input-margin;
   padding: $input-padding;

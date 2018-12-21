@@ -1,49 +1,46 @@
 ﻿@page
-
 @model OwnTimesModel
+@using TimeManager.Database
 @{ ViewData["Title"] = "Eigene Zeiten"; }
+@{
+  string[] reasons;
+  string[] rates;
+  using(var db = new DatabaseContext()) 
+  {
+    reasons = db.AbsenceDetail.Select(line => line.Reason).ToArray();
+    rates = db.OvertimeDetail.Select(line => line.Description).ToArray();
+  }
+}
 
 <h1>Eigene Zeiten</h1>
 
-<a class="btn green modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
-<a class="btn green modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
+<a class="btn modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
+<a class="btn modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
 
 <!-- AbsenceWindow -->
 <div id="absenceWindow" class="modal modal-fixed-footer" style="height: 600px">
   <div class="modal-content">
     <h4>Neue Abwesenheit</h4>
-    <div id="absenceForm" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
+    <form id="absenceForm" asp-page-handler="Absence" method="POST" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
       <div><span>Abwesend von:</span></div>
-      <div><input id="dateFrom" type="text" class="datepicker" /></div>
+      <div><input id="dateFrom" type="text" class="datepicker" asp-for="Absence.AbsentFrom" /></div>
       <div><span>Abwesend bis:</span></div>
-      <div><input id="dateTo" type="text" class="datepicker" /></div>
+      <div><input id="dateTo" type="text" class="datepicker" asp-for="Absence.AbsentTo" /></div>
       <div><span>Grund:</span></div>
       <div>
         <!-- nested Grid -->
-        <div id="reasonGrid"
-             style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+        <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+          @{
+              foreach (var item in reasons)
+              {
+                <label>
+                  <input type="radio" asp-for="Absence.Reason" value="item" />
+                  <span>@item</span>
+                </label>
+              }
+          }
           <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Ferien</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Militär</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Krank</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Unfall</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Schule</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
+            <input type="radio" asp-for="Absence.Reason" value="" />
             <span><input id="reasonText" type="text" placeholder="Anderer" /></span>
           </label>
         </div>
@@ -52,15 +49,15 @@
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
-          <input id="approved" type="checkbox" class="filled-in green" checked disabled />
+          <input id="approved" type="checkbox" class="filled-in green" disabled />
           <span></span>
         </label>
       </div>
-    </div>
+    </form>
   </div>
   <div class="modal-footer">
-    <button class="btn-small">OK</button>
-    <button class="btn-small">Abbrechen</button>
+    <button class="btn-small" onclick="$('#absenceWindow form').submit();">OK</button>
+    <button class="btn-small" onclick="M.Modal.getInstance(document.querySelector('#absenceWindow')).close();">Abbrechen</button>
   </div>
 </div>
 
@@ -68,20 +65,22 @@
 <div id="overtimeWindow" class="modal modal-fixed-footer" style="height: 600px">
   <div class="modal-content">
     <h4>Neue Überzeit</h4>
-    <label for="date">Datum:</label>
-    <input id="date" type="text" class="datepicker" />
-    <label for="customer">Kunde:</label>
-    <input id="customer" type="text" />
-    <label for="addition">Zuschlag:</label>
+    <form asp-page-handler="Overtime" method="POST">
+      <label for="date">Datum:</label>
+      <input id="date" type="text" class="datepicker" />
+      <label for="customer">Kunde:</label>
+      <input id="customer" type="text" />
+      <label for="addition">Zuschlag:</label>
       <select id="addition">
-        @foreach (var line in OwnTimesModel.OvertimeDetail) {
+        @foreach (var line in rates) {
           <option>@line</option>
         }
       </select>
+    </form>
   </div>
   <div class="modal-footer">
-    <button class="btn-small">OK</button>
-    <button class="btn-small">Abbrechen</button>
+    <button class="btn-small" onclick="$('#overtimeWindow form').submit();">OK</button>
+    <button class="btn-small" onclick="M.Modal.getInstance(document.querySelector('#overtimeWindow')).close();">Abbrechen</button>
   </div>
 </div>
 

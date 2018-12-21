@@ -1,21 +1,22 @@
 ﻿@{ 
-  bool menuAno, menuNormal, menuAdvanced, menuHigh; menuAno = menuNormal = menuAdvanced = menuHigh = false;
+  bool permissionAnonym, permissionNormal, permissionAdvanced, permissionHigh; 
+  permissionAnonym = permissionNormal = permissionAdvanced = permissionHigh = false;
   if (User.Identity.Name == null) 
   { 
-    menuAno = true; 
+    permissionAnonym = true; 
   } else 
   {
     if (User.IsInRole("Normal")) 
     {
-      menuNormal = true;
+      permissionNormal = true;
     } 
     if (User.IsInRole("Advanced")) 
     { 
-      menuAdvanced = menuNormal = true; 
+      permissionAdvanced = permissionNormal = true; 
     } 
     if (User.IsInRole("High")) 
     { 
-      menuHigh = menuAdvanced = menuNormal = true; 
+      permissionHigh = permissionAdvanced = permissionNormal = true; 
     } 
   }
 }
@@ -40,25 +41,25 @@
     <nav>
       <div class="nav-wrapper">
         <ul class="left">
-          @if (User.Identity.Name == null) 
+          @if (permissionAnonym) 
           {
             <li>
               <a href="/">Index</a>
             </li>
           } 
-          @if (menuNormal) 
+          @if (permissionNormal) 
           {
             <li>
               <a href="/OwnTimes">OwnTimes</a>
             </li>
           } 
-          @if (menuAdvanced) 
+          @if (permissionAdvanced) 
           {
             <li>
               <a href="/Controlling">Controlling</a>
             </li>
           } 
-          @if (menuHigh) 
+          @if (permissionHigh) 
           {
             <li>
               <a href="/Users">Users</a>
@@ -66,7 +67,7 @@
           }
         </ul>
         <ul class="right">
-          @if (User.Identity.Name != null) 
+          @if (!permissionAnonym) 
           {
             <li>
               <span>Hello @User.Identity.Name</span>
@@ -80,10 +81,10 @@
     </nav>
 
     <!-- Page content -->
-    <div class="container">
+    <div class="page-container">
       @RenderBody()
       <hr />
-      <footer style="position: absolute; bottom: 0;">
+      <footer>
         <p>ONAX AG - it solutions</p>
       </footer>
     </div>
