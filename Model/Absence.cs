@@ -8,8 +8,8 @@ namespace TimeManager.Model
     public Guid ID { get; set; }
     public Guid IdUser { get; set; }
     public Guid IdAbsenceDetail { get; set; }
-    public String AbsentFrom { get; set; }
-    public String AbsentTo { get; set; }
+    public DateTime AbsentFrom { get; set; }
+    public DateTime AbsentTo { get; set; }
     public String Reason { get; set; }
     public Boolean Approved { get; set; }
   }

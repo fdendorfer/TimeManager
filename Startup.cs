@@ -32,7 +32,7 @@ namespace TimeManager {
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
         options.LoginPath = "/Index";
         options.AccessDeniedPath = "/Error";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+        //options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
       });
 
       // Roles Authorization

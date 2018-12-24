@@ -1,6 +1,6 @@
 ﻿@page
-@model OwnTimesModel
 @using TimeManager.Database
+@model OwnTimesModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
 @{
   string[] reasons;
@@ -12,44 +12,73 @@
   }
 }
 
+
 <h1>Eigene Zeiten</h1>
 
 <a class="btn modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
 <a class="btn modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
 
 <!-- AbsenceWindow -->
-<div id="absenceWindow" class="modal modal-fixed-footer" style="height: 600px">
+<div id="absenceWindow" class="modal modal-fixed-footer" style="">
   <div class="modal-content">
     <h4>Neue Abwesenheit</h4>
     <form id="absenceForm" asp-page-handler="Absence" method="POST" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
+
       <div><span>Abwesend von:</span></div>
-      <div><input id="dateFrom" type="text" class="datepicker" asp-for="Absence.AbsentFrom" /></div>
-      <div><span>Abwesend bis:</span></div>
-      <div><input id="dateTo" type="text" class="datepicker" asp-for="Absence.AbsentTo" /></div>
-      <div><span>Grund:</span></div>
       <div>
-        <!-- nested Grid -->
-        <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
-          @{
-              foreach (var item in reasons)
-              {
-                <label>
-                  <input type="radio" asp-for="Absence.Reason" value="item" />
-                  <span>@item</span>
-                </label>
-              }
-          }
-          <label>
-            <input type="radio" asp-for="Absence.Reason" value="" />
-            <span><input id="reasonText" type="text" placeholder="Anderer" /></span>
-          </label>
-        </div>
+        <input id="dateFrom" type="text" class="datepicker" asp-for="Absence.AbsenceDateFrom" />
+        <span class="red-text" asp-validation-for="Absence.AbsenceDateFrom"></span>
       </div>
+
+      <div><span>Abwesend bis:</span></div>
+      <div>
+        <input id="dateTo" type="text" class="datepicker" asp-for="Absence.AbsenceDateTo" />
+        <span class="red-text" asp-validation-for="Absence.AbsenceDateTo"></span>
+      </div>
+
+      <div><span>Ganzer Tag</span></div>
+      <div style="display: grid; grid-template-columns: auto auto 1fr auto 1fr; grid-column-gap: 1em;">
+        <!-- label wrapper and empty span is required for materialize -->
+        <label>
+          <input id="fullDay" type="checkbox" class="filled-in" />
+          <span></span>
+        </label>
+        <span>Zeit von:</span>
+        <input id="timeFrom" type="text" class="timepicker" asp-for="Absence.AbsenceTimeFrom" />
+        <span>Zeit bis:</span>
+        <input id="timeTo" type="text" class="timepicker" asp-for="Absence.AbsenceTimeTo" />
+        <div></div>
+        <div></div>
+        <span class="red-text" asp-validation-for="Absence.AbsenceTimeFrom"></span>
+        <div></div>
+        <span class="red-text" asp-validation-for="Absence.AbsenceTimeTo"></span>
+      </div>
+
+      <div><span>Grund:</span></div>
+        <!-- nested Grid -->
+      <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+        @{
+            foreach (var item in @reasons)
+            {
+              <label>
+                <input type="radio" asp-for="Absence.Reason" value="@item" />
+                <span>@item</span>
+              </label>
+            }
+        }
+        <label>
+          <input type="radio" asp-for="Absence.Reason" value="" />
+          <span><input id="reasonText" type="text" placeholder="Anderer" asp-for="Absence.OtherReason" /></span>
+        </label>
+        <span class="red-text" asp-validation-for="Absence.Reason"></span>
+        <span class="red-text" asp-validation-for="Absence.OtherReason"></span>
+      </div>
+      
       <div><span>Ist i.O.:</span></div>
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
-          <input id="approved" type="checkbox" class="filled-in green" disabled />
+          <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" disabled />
           <span></span>
         </label>
       </div>
@@ -72,7 +101,7 @@
       <input id="customer" type="text" />
       <label for="addition">Zuschlag:</label>
       <select id="addition">
-        @foreach (var line in rates) {
+        @foreach (var line in @rates) {
           <option>@line</option>
         }
       </select>

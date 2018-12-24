@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeManager.Database;
 using TimeManager.Model;
 
-namespace TourManager.Pages {
+namespace TimeManager.Pages {
   public class IndexModel : PageModel {
     [BindProperty]
-    public LoginModel Login { get; set; } = new LoginModel();
+    public LoginValidation Login { get; set; } = new LoginValidation();
 
     public async Task<IActionResult> OnPostAsync() {
       // Is model validation successful
@@ -51,7 +51,8 @@ namespace TourManager.Pages {
       }
       // If there are data annotation errors in the model, they will be added to ModelErrors to show in ValidationSummary
       foreach (var item in ModelState.Values.Reverse().Where(v => v.Errors != null)) {
-        foreach (var item2 in item.Errors) {
+        foreach (var item2 in item.Errors) 
+        {
           ModelState.AddModelError(string.Empty, item2.ErrorMessage);
         }
       }

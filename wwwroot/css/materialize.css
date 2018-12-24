@@ -4955,7 +4955,7 @@ small {
 
 .btn, .btn-small, .btn-large {
   text-decoration: none;
-  color: #fff;
+  color: #000;
   background-color: #aecc53;
   text-align: center;
   letter-spacing: 0.5px;
@@ -4968,7 +4968,7 @@ small {
 
 .btn-floating {
   display: inline-block;
-  color: #fff;
+  color: #000;
   position: relative;
   overflow: hidden;
   z-index: 1;
@@ -5022,7 +5022,7 @@ small {
   width: inherit;
   display: inline-block;
   text-align: center;
-  color: #fff;
+  color: #000;
   font-size: 1.6rem;
   line-height: 40px;
 }
@@ -6936,7 +6936,7 @@ input[type=range]::-ms-thumb {
   margin: 10px 15px;
 }
 .sidenav li > a.btn, .sidenav li > a.btn-small, .sidenav li > a.btn-large, .sidenav li > a.btn-floating {
-  color: #fff;
+  color: #000;
 }
 .sidenav li > a.btn-flat {
   color: #343434;

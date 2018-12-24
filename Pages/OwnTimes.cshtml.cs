@@ -6,26 +6,44 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeManager.Model;
 
-namespace TourManager.Pages
+namespace TimeManager.Pages
 {
   public class OwnTimesModel : PageModel
-  {    
+  {
     [BindProperty]
-    public AbsenceModel Absence { get; set; } = new AbsenceModel();
+    public AbsenceValidation Absence { get; set; } = new AbsenceValidation();
+    [BindProperty]
     public OvertimeModel Overtime { get; set; } = new OvertimeModel();
-    
-    public void OnPost() 
-    {
-      Console.WriteLine("Catch All");
-    }
 
-    public void OnPostAbsence()
+    public IActionResult OnPostAbsence()
     {
-      Console.WriteLine("OnPostAbsence");
+      if (ModelState.IsValid)
+      {
+        return Page();
+      }
+      foreach (var item in ModelState.Values.Reverse().Where(v => v.Errors != null))
+      {
+        foreach (var item2 in item.Errors)
+        {
+          ModelState.AddModelError(string.Empty, item2.ErrorMessage);
+        }
+      }
+      return Page();
     }
-    public void OnPostOvertime()
+    public IActionResult OnPostOvertime()
     {
-
+      if (ModelState.IsValid)
+      {
+        return Page();
+      }
+      foreach (var item in ModelState.Values.Reverse().Where(v => v.Errors != null))
+      {
+        foreach (var item2 in item.Errors)
+        {
+          ModelState.AddModelError(string.Empty, item2.ErrorMessage);
+        }
+      }
+      return Page();
     }
   }
 }
