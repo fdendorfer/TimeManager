@@ -1,27 +1,36 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeManager.Model;
+using TimeManager.Database;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace TimeManager.Pages
 {
   public class OwnTimesModel : PageModel
   {
+    // Local variables
+    public string[] reasons;
+    public List<SelectListItem> rates;
+
+    // Fields used for validation
     [BindProperty]
     public AbsenceValidation Absence { get; set; } = new AbsenceValidation();
     [BindProperty]
-    public OvertimeModel Overtime { get; set; } = new OvertimeModel();
+    public OvertimeValidation Overtime { get; set; } = new OvertimeValidation();
 
-    public IActionResult OnPostAbsence()
+    public void OnGet()
+    {
+    }
+
+    public IActionResult OnPostAbsence(AbsenceValidation model)
     {
       if (ModelState.IsValid)
-      {
+      { 
         return Page();
       }
-      foreach (var item in ModelState.Values.Reverse().Where(v => v.Errors != null))
+      foreach (var item in ModelState.Values.Where(v => v.Errors != null))
       {
         foreach (var item2 in item.Errors)
         {
@@ -30,13 +39,14 @@ namespace TimeManager.Pages
       }
       return Page();
     }
-    public IActionResult OnPostOvertime()
+
+    public IActionResult OnPostOvertime(OvertimeValidation model)
     {
       if (ModelState.IsValid)
       {
         return Page();
       }
-      foreach (var item in ModelState.Values.Reverse().Where(v => v.Errors != null))
+      foreach (var item in ModelState.Values.Where(v => v.Errors != null))
       {
         foreach (var item2 in item.Errors)
         {

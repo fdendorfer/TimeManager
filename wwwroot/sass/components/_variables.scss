@@ -144,7 +144,7 @@ $datepicker-focus: rgba(0,0,0, .05) !default;
 $datepicker-selected: $secondary-color !default;
 $datepicker-selected-outfocus: desaturate(lighten($secondary-color, 35%), 15%) !default;
 $datepicker-day-focus: transparentize(desaturate($secondary-color, 5%), .75) !default;
-$datepicker-disabled-day-color: rgba(0, 0, 0, .3) !default;
+$datepicker-disabled-day-color: rgba(255, 255, 255, .5) !default;
 
 $timepicker-clock-color: rgba(0, 0, 0, .87) !default;
 $timepicker-clock-plate-bg: #eee !default;

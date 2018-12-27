@@ -7927,7 +7927,7 @@ input[type=range]::-ms-thumb {
   color: #fff;
 }
 .datepicker-table td.is-outside-current-month, .datepicker-table td.is-disabled {
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
 

@@ -17,7 +17,7 @@ timePickerList.forEach(elem => {
 });
 
 // This initializes all Materialize components
-document.addEventListener('DOMContentLoaded', function(e) {
+document.addEventListener("DOMContentLoaded", function(e) {
   // Build Materialize modals
   var buildModal = materializeBuilder(M.Modal, modalList, {
     onCloseStart: elem => {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
     }
   });
   // Build Materialize datepickers
-  materializeBuilder(M.Datepicker, datePickerList, {
+  var buildDatepicker = materializeBuilder(M.Datepicker, datePickerList, {
     format: "dd.mm.yyyy",
     firstDay: 1,
     showDaysInNextAndPreviousMonths: true,
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
     }
   });
   // Build Materialize timepickers
-  materializeBuilder(M.Timepicker, timePickerList, {
+  var buildTimepicker = materializeBuilder(M.Timepicker, timePickerList, {
     container: "body",
     i18n: {
       cancel: "Abbrechen",
@@ -99,32 +99,16 @@ function materializeBuilder(component, elements, options) {
   });
 }
 
-/* 
-$(document).ready(function(){
-  // OwnTimes
-  $('#absenceWindow').modal({
-    onCloseStart: (modal) => 
-    {
-      $(modal).modal('destroy');
-      $(modal).modal();
-    }
-  });
-  $('#absenceWindow #dateFrom').datepicker({format: 'dd.mm.yyyy'});
-  $('#absenceWindow #dateTo').datepicker({format: 'dd.mm.yyyy'});
-  $('#overtimeWindow').modal();
-  $('#overtimeWindow #date').datepicker({format: 'dd.mm.yyyy'});
-  $('#overtimeWindow select').formSelect();
-}) */
-
 $(document).ready(function() {
-  $("#absenceForm").on("submit", function(e) {
+  $("#absenceForm, #overtimeForm").on("submit", function(e) {
     e.preventDefault();
     $.ajax({
       url: $(this).attr("action") || window.location.pathname,
       type: "POST",
-      data: $("#absenceForm").serialize(),
+      data: $(e.target).serialize(),
       success: function(data) {
-        $("#absenceForm").replaceWith($(data).find("#absenceForm"));
+        $(e.target).replaceWith($(data).find('#' + e.target.id));
+        M.AutoInit();
       },
       error: function(jXHR, textStatus, errorThrown) {
         alert(errorThrown);

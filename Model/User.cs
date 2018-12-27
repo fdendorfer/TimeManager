@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TimeManager.Model {
-  public class User {
+  public class UserModel {
     public Guid ID { get; set; }
     public Guid IdPermission { get; set; }
     public String Firstname { get; set; }

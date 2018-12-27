@@ -5,28 +5,35 @@ namespace TimeManager.Extensions
 {
     public class RequiredIfAttribute : ValidationAttribute
     {
-        public bool AllowEmptyStrings { get; set; }
-        public bool IsDisabled { get; set; } = false;
-        public AbsenceValidation AbsenceValidation { get; set; }
+        public bool AllowEmptyStrings;
+        public string mustBeTrueProperty;
+        public string mustNotBeEmptyProperty;
+        public new string ErrorMessage;
 
         public RequiredIfAttribute() {
         }
 
-        public override bool IsValid(object value)
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if(IsDisabled == true)
-            {
-                return true;
+            if(mustBeTrueProperty == null && mustNotBeEmptyProperty == null){
+                throw new System.Exception("Eigther mustBeTrueProperty or mustNotBeEmptyProperty must contain the name of a dependent property as string.");
             }
+            if(mustBeTrueProperty != null && (bool)validationContext.ObjectInstance.GetType().GetProperty(this.mustBeTrueProperty).GetValue(validationContext.ObjectInstance, null)){
+                return new ValidationResult(this.ErrorMessage);
+            }
+            if(mustNotBeEmptyProperty != null && string.IsNullOrEmpty((string)validationContext.ObjectInstance.GetType().GetProperty(this.mustNotBeEmptyProperty).GetValue(validationContext.ObjectInstance, null))){
+                return new ValidationResult(this.ErrorMessage);
+            }
+
             if(value == null)
             {
-                return false;
+                return new ValidationResult(this.ErrorMessage);
             }
             var stringValue = value as string;
             if (stringValue != null && !AllowEmptyStrings) {
-                return stringValue.Trim().Length != 0;
+                //return stringValue.Trim().Length != 0;
             }
-            return true;
+            return new ValidationResult(this.ErrorMessage);
         }
     }
 }

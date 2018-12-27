@@ -1,0 +1,79 @@
+﻿@model OwnTimesModel
+@{
+  using (var db = new DatabaseContext())
+  {
+    Model.reasons = db.AbsenceDetail.Select(item => item.Reason).ToArray();
+    Model.rates = db.OvertimeDetail.Select(item => new SelectListItem
+    {
+      Text = item.Description,
+      Value = item.ID.ToString()
+    }).ToList();
+  }
+}
+
+<div id="absenceWindow" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <h4>Neue Abwesenheit</h4>
+    <form id="absenceForm" asp-page-handler="Absence" method="POST" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
+
+      <div><span>Abwesend von:</span></div>
+      <div>
+        <input id="dateFrom" type="text" class="datepicker" asp-for="Absence.AbsenceDateFrom" />
+        <span class="red-text" asp-validation-for="Absence.AbsenceDateFrom"></span>
+      </div>
+
+      <div><span>Abwesend bis:</span></div>
+      <div>
+        <input id="dateTo" type="text" class="datepicker" asp-for="Absence.AbsenceDateTo" />
+        <span class="red-text" asp-validation-for="Absence.AbsenceDateTo"></span>
+      </div>
+
+      <div><span>Ganzer Tag</span></div>
+      <div style="display: grid; grid-template-columns: auto auto 1fr auto 1fr; grid-column-gap: 1em;">
+        <!-- label wrapper and empty span is required for materialize -->
+        <label>
+          <input type="checkbox" class="filled-in" asp-for="Absence.FullDay" />
+          <span></span>
+        </label>
+        <span>Zeit von:</span>
+        <input id="timeFrom" type="text" class="timepicker" asp-for="Absence.AbsenceTimeFrom" />
+        <span>Zeit bis:</span>
+        <input id="timeTo" type="text" class="timepicker" asp-for="Absence.AbsenceTimeTo" />
+        <div></div>
+        <span class="red-text" asp-validation-for="Absence.AbsenceTimeFrom" style="grid-column: 2 / span 2;"></span>
+        <span class="red-text" asp-validation-for="Absence.AbsenceTimeTo" style="grid-column: 4 / span 2"></span>
+      </div>
+
+      <div><span>Grund:</span></div>
+        <!-- nested Grid -->
+      <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+        @foreach (var item in Model.reasons)
+          {
+            <label>
+              <input type="radio" asp-for="Absence.Reason" value="@item" />
+              <span>@item</span>
+            </label>
+          }
+        <label>
+          <input type="radio" asp-for="Absence.Reason" value="" />
+          <span><input id="reasonText" type="text" placeholder="Anderer" asp-for="Absence.OtherReason" /></span>
+        </label>
+        <span class="red-text" asp-validation-for="Absence.Reason"></span>
+        <span class="red-text" asp-validation-for="Absence.OtherReason"></span>
+      </div>
+      
+      <div><span>Ist i.O.:</span></div>
+      <div>
+        <!-- label wrapper and empty span is required for materialize -->
+        <label>
+          <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" disabled />
+          <span></span>
+        </label>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-small" onclick="$('#absenceWindow form').submit();">OK</button>
+    <button class="btn-small" onclick="M.Modal.getInstance(document.querySelector('#absenceWindow')).close();">Abbrechen</button>
+  </div>
+</div>

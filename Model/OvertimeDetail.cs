@@ -2,7 +2,7 @@ using System;
 
 namespace TimeManager.Model
 {
-  public class OvertimeDetail
+  public class OvertimeDetailModel
   {
     public Guid ID { get; set; }
     public String Description { get; set; }
