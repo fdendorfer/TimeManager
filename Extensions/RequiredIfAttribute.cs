@@ -5,9 +5,13 @@ namespace TimeManager.Extensions
 {
     public class RequiredIfAttribute : ValidationAttribute
     {
-        public bool AllowEmptyStrings;
-        public string mustBeTrueProperty;
-        public string mustNotBeEmptyProperty;
+        public enum result {
+            mustBeTrue,
+            mustMatchString,
+        }        
+        public string relatedProperty;
+        public result relatedPropertyValue;
+        public string matchingString;
         public new string ErrorMessage;
 
         public RequiredIfAttribute() {
@@ -15,25 +19,27 @@ namespace TimeManager.Extensions
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if(mustBeTrueProperty == null && mustNotBeEmptyProperty == null){
-                throw new System.Exception("Eigther mustBeTrueProperty or mustNotBeEmptyProperty must contain the name of a dependent property as string.");
-            }
-            if(mustBeTrueProperty != null && (bool)validationContext.ObjectInstance.GetType().GetProperty(this.mustBeTrueProperty).GetValue(validationContext.ObjectInstance, null)){
-                return new ValidationResult(this.ErrorMessage);
-            }
-            if(mustNotBeEmptyProperty != null && string.IsNullOrEmpty((string)validationContext.ObjectInstance.GetType().GetProperty(this.mustNotBeEmptyProperty).GetValue(validationContext.ObjectInstance, null))){
-                return new ValidationResult(this.ErrorMessage);
-            }
+            var prop = validationContext.ObjectInstance.GetType().GetProperty(this.relatedProperty).GetValue(validationContext.ObjectInstance, null);
 
-            if(value == null)
-            {
-                return new ValidationResult(this.ErrorMessage);
+            if(relatedProperty == null)
+                throw new System.Exception("Please set relatedProperty to the name of the dependent property as string.");
+            
+            switch(relatedPropertyValue) {
+                case result.mustBeTrue: 
+                    if((bool)prop == true || !string.IsNullOrEmpty((string)value))
+                        return ValidationResult.Success;
+                    else
+                        return new ValidationResult(this.ErrorMessage);
+
+                case result.mustMatchString: 
+                    if(string.IsNullOrEmpty(matchingString))
+                        throw new System.Exception("matching String is required for this operation");
+                    if((string)prop == matchingString && string.IsNullOrEmpty((string)value))
+                        return new ValidationResult(this.ErrorMessage);
+                    else
+                        return ValidationResult.Success;
             }
-            var stringValue = value as string;
-            if (stringValue != null && !AllowEmptyStrings) {
-                //return stringValue.Trim().Length != 0;
-            }
-            return new ValidationResult(this.ErrorMessage);
+            return ValidationResult.Success;
         }
     }
 }

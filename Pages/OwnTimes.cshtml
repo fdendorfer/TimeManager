@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Security.Claims
 @model OwnTimesModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
 
@@ -13,4 +14,59 @@
 <partial name="/Pages/OwnTimes/_OvertimePartial.cshtml" />
 
 <!-- AbsenceGrid -->
+<table>
+  <tr>
+    <th>Von</th>
+    <th>Bis</th>
+    <th>Grund</th>
+    <th>Ist I.O.</th>
+  </tr>
+  @{
+    List<Model.AbsenceModel> absences;
+    using (var db = new DatabaseContext()){
+      absences = db.Absence.Where(a => a.IdUser == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).ToList();
+    }
+    foreach(var item in absences) 
+    {
+      <tr>
+        <td>@item.AbsentFrom</td>
+        <td>@item.AbsentTo</td>
+        <td>@item.Reason</td>
+        <td>
+          <label>
+            @if(item.Approved)
+            {
+              <input type="checkbox" class="filled-in" checked disabled/>
+            } else 
+            {
+              <input type="checkbox" class="filled-in" disabled />
+            }
+            <span></span>
+          </label>
+        </td>
+      </tr>
+    }
+  }
+</table>
 <!-- OvertimeGrid -->
+<table>
+  <tr>
+    <th>Datum</th>
+    <th>Kunde</th>
+    <th>Std.</th>
+  </tr>
+  @{
+    List<Model.OvertimeModel> overtimes;
+    using (var db = new DatabaseContext()) {
+      overtimes  = db.Overtime.Where(a => a.IdUser == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).ToList();
+    }
+    foreach(var item in overtimes) 
+    {
+      <tr>
+        <td>@item.Date</td>
+        <td>@item.Customer</td>
+        <td>@item.Hours</td>
+      </tr>
+    }
+  }
+</table>

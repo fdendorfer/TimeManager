@@ -90,9 +90,11 @@ GO
 -- **************************************************
 CREATE TABLE Overtime (
 	[ID] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+	[IdOvertimeDetail] UNIQUEIDENTIFIER,
 	[IdUser] UNIQUEIDENTIFIER,
+	[Customer] NVARCHAR(100),
 	[Date] SMALLDATETIME,
-	[Customer] NVARCHAR(100)
+	[Hours] DECIMAL(18, 2)
 )
 GO
 -- **************************************************
@@ -125,8 +127,7 @@ GO
 -- Insert Users
 -- **************************************************
 INSERT INTO [AbsenceDetail] ([Reason])
-	VALUES ('Anderes'),
-	('Ferien'),
+	VALUES ('Ferien'),
 	('Krank'),
 	('Militär'),
 	('Schule'),

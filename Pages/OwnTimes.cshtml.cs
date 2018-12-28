@@ -5,6 +5,9 @@ using TimeManager.Model;
 using TimeManager.Database;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
+using System;
+using System.Security.Claims;
+using System.Globalization;
 
 namespace TimeManager.Pages
 {
@@ -24,11 +27,33 @@ namespace TimeManager.Pages
     {
     }
 
-    public IActionResult OnPostAbsence(AbsenceValidation model)
+    public IActionResult OnPostAbsence()
     {
+      ModelState.Clear();
+      TryValidateModel(Absence);
+
       if (ModelState.IsValid)
-      { 
-        return Page();
+      {
+        var dateTimeFrom = DateTime.Parse(Absence.AbsenceDateFrom + Absence.AbsenceTimeFrom, new CultureInfo("de-CH"));
+        var dateTimeTo = DateTime.Parse(Absence.AbsenceDateTo + Absence.AbsenceTimeTo, new CultureInfo("de-CH"));
+        var userID = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        using (var db = new DatabaseContext())
+        {
+          var absence = new AbsenceModel()
+          {
+            ID = Guid.NewGuid(),
+            IdUser = userID,
+            IdAbsenceDetail = db.AbsenceDetail.Where(a => a.Reason == Absence.Reason).Select(a => a.ID).FirstOrDefault(),
+            AbsentFrom = dateTimeFrom,
+            AbsentTo = dateTimeTo,
+            Reason = Absence.Reason,
+            Approved = Absence.Approved
+          };
+          db.Absence.Add(absence);
+          db.SaveChanges();
+        }
+        return StatusCode(202); // HTTP 202 ACCEPTED
       }
       foreach (var item in ModelState.Values.Where(v => v.Errors != null))
       {
@@ -40,11 +65,30 @@ namespace TimeManager.Pages
       return Page();
     }
 
-    public IActionResult OnPostOvertime(OvertimeValidation model)
+    public IActionResult OnPostOvertime()
     {
+      ModelState.Clear();
+      TryValidateModel(Overtime);
+
       if (ModelState.IsValid)
       {
-        return Page();
+        var userID = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        
+        using (var db = new DatabaseContext())
+        {
+          var overtime = new OvertimeModel()
+          {
+            ID = Guid.NewGuid(),
+            IdOvertimeDetail = Overtime.IdOvertimeDetail,
+            IdUser = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value),
+            Customer = Overtime.Customer,
+            Date = DateTime.Parse(Overtime.Date, new CultureInfo("de-CH")),
+            Hours = Overtime.Hours
+          };
+          db.Overtime.Add(overtime);
+          db.SaveChanges();
+        }
+        return StatusCode(202); // HTTP 202 ACCEPTED
       }
       foreach (var item in ModelState.Values.Where(v => v.Errors != null))
       {

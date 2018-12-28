@@ -7,8 +7,8 @@ namespace TimeManager.Model
     public Guid ID { get; set; }
     public Guid IdOvertimeDetail { get; set; }
     public Guid IdUser { get; set; }
-    public DateTime Date { get; set; }
     public String Customer { get; set; }
+    public DateTime Date { get; set; }
     public Decimal Hours { get; set; }
   }
 }

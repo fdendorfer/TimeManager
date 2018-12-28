@@ -30,6 +30,7 @@ namespace TimeManager.Pages {
 
             // List of properties, the authentication cookie will store
             var claims = new List<Claim> {
+              new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
               new Claim(ClaimTypes.Name, user.Username),
               new Claim(ClaimTypes.Role, permission.Description)
             };
