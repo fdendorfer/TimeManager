@@ -16,27 +16,33 @@ body {
 }
 
 .page-container {
+  height: 100%;
   width: 90%;
-  margin: 0 auto;
+  background: #333333;
+  border-radius: 2em;
+  padding: 2em;
+  margin: 5vw auto 0 auto;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 }
 
-.page-container > .inner-container {
-  background: #333333;
-  padding: 2em;
-  margin-top: 5vw;
-  border-radius: 2em;
-  flex: 1 1 auto;
-  overflow: auto;
+.page-container .inner-container {
+  height: 100%;
+  display: block;
 }
 
-.page-container > footer {
+body > footer {
+  width: 90%;
   border-radius: 2em 2em 0 0;
   background: #333333;
   padding: 0 2em;
-  margin-top: 1.5em;
+  margin: 1.5em auto 0;
+}
+
+.table-container {
+  overflow: auto;
+  height: 30%;
 }
 
 .modal.modal-fixed-footer .modal-footer {

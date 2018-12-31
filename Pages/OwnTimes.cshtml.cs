@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace TimeManager.Pages
 {
-  public class OwnTimesModel : PageModel
+  public class OwnTimesPageModel : PageModel
   {
     // Local variables
     public string[] reasons;
@@ -23,10 +23,6 @@ namespace TimeManager.Pages
     [BindProperty]
     public OvertimeValidation Overtime { get; set; } = new OvertimeValidation();
 
-    public void OnGet()
-    {
-    }
-
     public IActionResult OnPostAbsence()
     {
       ModelState.Clear();
@@ -34,8 +30,8 @@ namespace TimeManager.Pages
 
       if (ModelState.IsValid)
       {
-        var dateTimeFrom = DateTime.Parse(Absence.AbsenceDateFrom + Absence.AbsenceTimeFrom, new CultureInfo("de-CH"));
-        var dateTimeTo = DateTime.Parse(Absence.AbsenceDateTo + Absence.AbsenceTimeTo, new CultureInfo("de-CH"));
+        var dateTimeFrom = DateTime.Parse(Absence.AbsenceDateFrom + " " + Absence.AbsenceTimeFrom, new CultureInfo("de-CH"));
+        var dateTimeTo = DateTime.Parse(Absence.AbsenceDateTo + " " + Absence.AbsenceTimeTo, new CultureInfo("de-CH"));
         var userID = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         using (var db = new DatabaseContext())
@@ -48,7 +44,8 @@ namespace TimeManager.Pages
             AbsentFrom = dateTimeFrom,
             AbsentTo = dateTimeTo,
             Reason = Absence.Reason,
-            Approved = Absence.Approved
+            Approved = Absence.Approved,
+            CreatedOn = DateTime.Now
           };
           db.Absence.Add(absence);
           db.SaveChanges();
@@ -83,7 +80,8 @@ namespace TimeManager.Pages
             IdUser = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value),
             Customer = Overtime.Customer,
             Date = DateTime.Parse(Overtime.Date, new CultureInfo("de-CH")),
-            Hours = Overtime.Hours
+            Hours = Overtime.Hours,
+            CreatedOn = DateTime.Now
           };
           db.Overtime.Add(overtime);
           db.SaveChanges();

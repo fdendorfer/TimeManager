@@ -100,28 +100,34 @@ function materializeBuilder(component, elements, options) {
 }
 
 // This prevents the form from submitting normally, because it would reload the whole page, even when there were errors on the page. Like this only the error fields get switched
-document.addEventListener("DOMContentLoaded", function(e) {
-  $('#absenceForm, #overtimeForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-      url: $(this).attr('action') || window.location.pathname,
-      type: 'POST',
-      data: $(e.target).serialize(),
-      success: function(data, textStatus, jqXHR) {
-        if(jqXHR.status == 202)
-          location.reload();
-
-        let parser = new DOMParser();
-        let errorSpansOld = document.querySelectorAll('.red-text');
-        let errorSpansNew = parser.parseFromString(data, "text/html").querySelectorAll('.red-text');
-        for(var i = 0; i < errorSpansNew.length; i++) {
-          errorSpansOld[i].outerHTML = errorSpansNew[i].outerHTML;
-        }
-      },
-      error: function(jXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+$('#absenceForm, #overtimeForm').on('submit', function(e) {
+  e.preventDefault();
+  $.ajax({
+    url: $(this).attr('action') || window.location.pathname,
+    type: 'POST',
+    data: $(e.target).serialize(),
+    success: function(data, textStatus, jqXHR) {
+      if(jqXHR.status == 202)
         location.reload();
+
+      let parser = new DOMParser();
+      let errorSpansOld = document.querySelectorAll('.red-text');
+      let errorSpansNew = parser.parseFromString(data, "text/html").querySelectorAll('.red-text');
+      for(var i = 0; i < errorSpansNew.length; i++) {
+        errorSpansOld[i].outerHTML = errorSpansNew[i].outerHTML;
       }
-    });
+    },
+    error: function(jXHR, textStatus, errorThrown) {
+      alert(errorThrown);
+      location.reload();
+    }
   });
+});
+
+$("input[name='isIO']").on("change", function(e){
+  $.ajax({
+    url: $(this).attr('action') || window.location.pathname,
+    type: 'POST',
+    data: { idAbsence: $(this).attr('data-id-absence'), value: e.currentTarget.checked }
+  })
 });

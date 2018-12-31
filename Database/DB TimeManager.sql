@@ -6,7 +6,6 @@
 -- **************************************************
 
 -- **************************************************
--- Delete when finished DB
 -- Dropping old database to create new
 -- **************************************************
 USE master
@@ -117,9 +116,9 @@ GO
 -- Insert Users
 -- **************************************************
 INSERT INTO [USER] ([IdPermission], [Firstname], [Lastname], [Username], [Password])
-	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', ENCRYPTBYPASSPHRASE('SECURE1',N'fd1')),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', ENCRYPTBYPASSPHRASE('SECURE1',N'rb1')),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', ENCRYPTBYPASSPHRASE('SECURE1',N'ma1'))
+	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1)),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1)),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1))
 GO
 -- **************************************************
 

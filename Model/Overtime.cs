@@ -10,5 +10,6 @@ namespace TimeManager.Model
     public String Customer { get; set; }
     public DateTime Date { get; set; }
     public Decimal Hours { get; set; }
+    public DateTime CreatedOn { get; set; }
   }
 }
