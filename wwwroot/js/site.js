@@ -111,8 +111,8 @@ $('#absenceForm, #overtimeForm').on('submit', function(e) {
         location.reload();
 
       let parser = new DOMParser();
-      let errorSpansOld = document.querySelectorAll('.red-text');
-      let errorSpansNew = parser.parseFromString(data, "text/html").querySelectorAll('.red-text');
+      let errorSpansOld = $('.red-text');
+      let errorSpansNew = $(data).find('.red-text');
       for(var i = 0; i < errorSpansNew.length; i++) {
         errorSpansOld[i].outerHTML = errorSpansNew[i].outerHTML;
       }

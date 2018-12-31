@@ -25,7 +25,8 @@ namespace TimeManager.Pages
 
     public IActionResult OnPostAbsence()
     {
-      ModelState.Clear();
+      var oldModelState = ModelState;
+      //ModelState.Clear();
       TryValidateModel(Absence);
 
       if (ModelState.IsValid)
@@ -64,10 +65,19 @@ namespace TimeManager.Pages
 
     public IActionResult OnPostOvertime()
     {
-      ModelState.Clear();
-      TryValidateModel(Overtime);
+      bool modelValid;
+      {
+        var pm = new OwnTimesPageModel();
+        var ms = pm.ModelState;
+        ms.Clear();
+        //Validate onto ms
+        modelValid = pm.TryValidateModel(Overtime);
+      }
+      
+      //TryValidateModel(Overtime);
+      
 
-      if (ModelState.IsValid)
+      if (modelValid)
       {
         var userID = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
         
