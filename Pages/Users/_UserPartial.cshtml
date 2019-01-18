@@ -1,0 +1,76 @@
+﻿@model UsersPageModel
+@{ 
+  using(var db = new DatabaseContext())
+  {
+    Model.departments.Add(new SelectListItem("Software", "Software"));
+    Model.departments.Add(new SelectListItem("Technik", "Technik"));
+
+    Model.permissions = db.Permission.Select(item => new SelectListItem
+    {
+      Text = item.Description,
+      Value = item.ID.ToString()
+    }).ToList();
+  }
+}
+
+<div id="userWindow" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <h4>Neuer Benutzer</h4>
+    <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+      <div>
+        <span>Benutzername:</span>
+        <input asp-for="ValUser.Username" />
+        <span class="red-text" asp-validation-for="ValUser.Username"></span>
+      </div>
+
+      <div>
+        <span>Passwort:</span>
+        <input asp-for="ValUser.Password" />
+        <span class="red-text" asp-validation-for="ValUser.Password"></span>
+      </div>
+
+      <div>
+        <span>Vorname:</span>
+        <input asp-for="ValUser.Firstname" />
+        <span class="red-text" asp-validation-for="ValUser.Firstname"></span>
+      </div>
+
+      <div>
+        <span>Nachname:</span>
+        <input asp-for="ValUser.Lastname" />
+        <span class="red-text" asp-validation-for="ValUser.Lastname"></span>
+      </div>
+
+      <div>
+        <span>Abteilung:</span>
+        <select asp-for="ValUser.Department" asp-items="Model.departments"></select>
+        <span class="red-text" asp-validation-for="ValUser.Department"></span>
+      </div>
+
+      <div>
+        <span>Ferientage:</span>
+        <input asp-for="ValUser.Holidays" />
+        <span class="red-text" asp-validation-for="ValUser.Holidays"></span>
+      </div>
+
+      <div>
+        <span>Deaktiviert:</span>
+        <label>
+          <input asp-for="ValUser.Deactivated" />
+          <span></span>
+        </label>
+      </div>
+
+      <div>
+        <span>Berechtigung</span>
+        <select asp-for="ValUser.IdPermission" asp-items="Model.permissions"></select>
+      </div>
+      <input type="hidden" asp-for="ValUser.ID" />
+    </form>
+    <span>Änderungen an einem engeloggten Benutzer werden aktiv, nachdem sich der Benutzer das nächste Mal anmeldet.</span>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-small" onclick="$('#userWindow form').submit();">OK</button>
+    <button class="btn-small" onclick="$('#userWindow').modal('close');">Abbrechen</button>
+  </div>
+</div>

@@ -1,4 +1,14 @@
 @model OwnTimesPageModel
+@{
+  using (var db = new DatabaseContext())
+  {
+    Model.rates = db.OvertimeDetail.Select(item => new SelectListItem
+    {
+      Text = item.Description,
+      Value = item.ID.ToString()
+    }).ToList();
+  }
+}
 
 <div id="overtimeWindow" class="modal modal-fixed-footer">
   <div class="modal-content">
@@ -17,10 +27,11 @@
       <span class="red-text" asp-validation-for="Overtime.Customer" style="display: block;"></span>
       <span>Zuschlag:</span>
       <select asp-for="Overtime.IdOvertimeDetail" asp-items="Model.rates"></select>
+      <input type="hidden" asp-for="Overtime.ID" />
     </form>
   </div>
   <div class="modal-footer">
     <button class="btn-small" onclick="$('#overtimeWindow form').submit();">OK</button>
-    <button class="btn-small" onclick="M.Modal.getInstance(document.querySelector('#overtimeWindow')).close();">Abbrechen</button>
+    <button class="btn-small" onclick="$('#overtimeWindow').modal('close');">Abbrechen</button>
   </div>
 </div>

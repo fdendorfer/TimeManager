@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using TimeManager.Database;
+using TimeManager.Model;
+
+namespace TimeManager.Pages
+{
+  public class UsersPageModel : PageModel
+  {
+    // Local variables
+    public List<SelectListItem> departments = new List<SelectListItem>();
+    public List<SelectListItem> permissions;
+
+    // Field used for validation
+    [BindProperty]
+    public UserValidation ValUser { get; set; } = new UserValidation();
+
+    // Get single user
+    public IActionResult OnGet([FromQuery] string id)
+    {
+      if (id == null)
+        return Page();
+
+      using (var db = new DatabaseContext())
+      {
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
+        var user = (from u in db.User
+                    where u.ID == new Guid(id)
+                    select u).Single();
+
+        // Fillin the userPartial with existing values
+        ValUser.ID = user.ID.ToString();
+        ValUser.IdPermission = user.IdPermission.ToString();
+        ValUser.Username = user.Username;
+        ValUser.Firstname = user.Firstname;
+        ValUser.Lastname = user.Lastname;
+        ValUser.Department = user.Department;
+        ValUser.Holidays = user.Holidays;
+        ValUser.Deactivated = user.Deactivated;
+
+        return new JsonResult(JsonConvert.SerializeObject(ValUser));
+      }
+    }
+
+    // New or update user
+    public IActionResult OnPost()
+    {
+      var isValid = Validator.TryValidateObject(ValUser, new ValidationContext(ValUser, serviceProvider: null, items: null), new List<ValidationResult>(), true);
+
+      if (isValid)
+      {
+        using (var db = new DatabaseContext())
+        {
+          var user = new UserModel()
+          {
+            ID = ValUser.ID == null ? Guid.NewGuid() : new Guid(ValUser.ID),
+            IdPermission = new Guid(ValUser.IdPermission),
+            Firstname = ValUser.Firstname,
+            Lastname = ValUser.Lastname,
+            Username = ValUser.Username,
+            Department = ValUser.Department,
+            Holidays = ValUser.Holidays,
+            Deactivated = ValUser.Deactivated
+          };
+          var testUser = db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
+          if(ValUser.Password == null && testUser != null)
+          {
+            user.Password = testUser.Password;
+          } else
+          {
+            user.PasswordValue = ValUser.Password;
+          }
+
+          var record = db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
+          if (record == null)
+          {
+            db.User.Add(user);
+          } else
+          {
+            record = user;
+            db.Update(record);
+          }
+          db.SaveChanges();
+        }
+        return Page(); // HTTP 202 ACCEPTED
+      }
+      foreach (var item in ModelState.Values.Where(v => v.Errors != null))
+      {
+        foreach (var item2 in item.Errors)
+        {
+          ModelState.AddModelError(string.Empty, item2.ErrorMessage);
+        }
+      }
+      return Page();
+    }
+
+    // Deactivate User
+    public void OnDelete([FromQuery] string id)
+    {
+      using(var db = new DatabaseContext())
+      {
+        db.User.Find(new Guid(id)).Deactivated = true;
+        db.SaveChanges();
+      }
+    }
+  }
+}

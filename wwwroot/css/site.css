@@ -3,6 +3,11 @@ html {
   color: white;
   background-color: #000000;
   height: 100%;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 .modal, .modal .modal-footer {
@@ -10,39 +15,49 @@ html {
 }
 
 body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 4em;
 }
 
 .page-container {
-  height: 100%;
+  height: auto;
+  min-height: 80vh;
   width: 90%;
   background: #333333;
   border-radius: 2em;
   padding: 2em;
   margin: 5vw auto 0 auto;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.page-container .inner-container {
-  height: 100%;
-  display: block;
 }
 
 body > footer {
+  height: 3em;
   width: 90%;
   border-radius: 2em 2em 0 0;
   background: #333333;
-  padding: 0 2em;
-  margin: 1.5em auto 0;
+  padding: .75em 2em;
+  position: absolute;
+  bottom: 0;
+  left: 5vw;
 }
 
-.table-container {
+.table-container tbody{
+  display: block;
+  height: var(--height);
   overflow: auto;
-  height: 30%;
+}
+.table-container thead, .table-container tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-container thead {
+  width: calc(100% - 1em);
+}
+
+.table-container table {
+  width: 100%;
 }
 
 .modal.modal-fixed-footer .modal-footer {

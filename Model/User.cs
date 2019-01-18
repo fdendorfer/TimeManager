@@ -21,6 +21,8 @@ namespace TimeManager.Model {
       }
     }
     public String Department { get; set; }
+    public Decimal Holidays { get; set; }
+    public Boolean Deactivated { get; set; }
 
     public bool MatchesPassword(string pw) {
       var hashedPW = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(pw));

@@ -7,12 +7,18 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeManager.Database;
+using TimeManager.Extensions;
 using TimeManager.Model;
 
 namespace TimeManager.Pages {
   public class IndexModel : PageModel {
     [BindProperty]
     public LoginValidation Login { get; set; } = new LoginValidation();
+    
+    public async void OnGetAsync()
+    {
+      await Test.Do();
+    }
 
     public async Task<IActionResult> OnPostAsync() {
       // Is model validation successful
@@ -20,7 +26,7 @@ namespace TimeManager.Pages {
         // using db for error fallback
         using (var db = new DatabaseContext()) {
           // Trying to get a user from db where username and password match
-          var user = db.User.FirstOrDefault(u => u.Username == Login.Username && u.MatchesPassword(Login.Password));
+          var user = db.User.FirstOrDefault(u => u.Username == Login.Username && u.MatchesPassword(Login.Password) && u.Deactivated == false);
           // If a matching user is found
           if (user != null) {
             //Login successful

@@ -1,23 +1,30 @@
-﻿@{ 
-  bool permissionAnonym, permissionNormal, permissionAdvanced, permissionHigh; 
-  permissionAnonym = permissionNormal = permissionAdvanced = permissionHigh = false;
-  if (User.Identity.Name == null) 
-  { 
-    permissionAnonym = true; 
-  } else 
+﻿@{
+  using (var db = new DatabaseContext())
   {
-    if (User.IsInRole("Normal")) 
+    if (User.Identity.Name != null && ViewBag.CurrentUser == null)
+    {
+      ViewBag.CurrentUser = db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
+    }
+  }
+  bool permissionAnonym, permissionNormal, permissionAdvanced, permissionHigh;
+  permissionAnonym = permissionNormal = permissionAdvanced = permissionHigh = false;
+  if (User.Identity.Name == null)
+  {
+    permissionAnonym = true;
+  } else
+  {
+    if (User.IsInRole("Normal"))
     {
       permissionNormal = true;
-    } 
-    if (User.IsInRole("Advanced")) 
-    { 
-      permissionAdvanced = permissionNormal = true; 
-    } 
-    if (User.IsInRole("High")) 
-    { 
-      permissionHigh = permissionAdvanced = permissionNormal = true; 
-    } 
+    }
+    if (User.IsInRole("Advanced"))
+    {
+      permissionAdvanced = permissionNormal = true;
+    }
+    if (User.IsInRole("High"))
+    {
+      permissionHigh = permissionAdvanced = permissionNormal = true;
+    }
   }
 }
 <!DOCTYPE html>
@@ -28,7 +35,7 @@
     <title>@ViewData["Title"] - TimeManager</title>
     <!-- Materialize -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
-    <link rel="stylesheet" href="css/materialize.css" />
+    <link rel="stylesheet" href="~/css/materialize.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -41,25 +48,25 @@
     <nav>
       <div class="nav-wrapper">
         <ul class="left">
-          @if (permissionAnonym) 
+          @if (permissionAnonym)
           {
             <li>
               <a href="/">Index</a>
             </li>
-          } 
-          @if (permissionNormal) 
+          }
+          @if (permissionNormal)
           {
             <li>
               <a href="/OwnTimes">OwnTimes</a>
             </li>
-          } 
-          @if (permissionAdvanced) 
+          }
+          @if (permissionAdvanced)
           {
             <li>
               <a href="/Controlling">Controlling</a>
             </li>
-          } 
-          @if (permissionHigh) 
+          }
+          @if (permissionHigh)
           {
             <li>
               <a href="/Users">Users</a>
@@ -67,10 +74,10 @@
           }
         </ul>
         <ul class="right">
-          @if (!permissionAnonym) 
+          @if (!permissionAnonym)
           {
             <li>
-              <span>Hello @User.Identity.Name</span>
+              <span>Hallo @ViewBag.CurrentUser.Username</span>
             </li>
             <li onclick="logoutForm.submit();">
               <a>Logout</a>
@@ -82,27 +89,19 @@
 
     <!-- Page content -->
     <div class="page-container">
-      <div class="inner-container">
-        @RenderBody()
-      </div>
+      @RenderBody()
     </div>
 
     <footer>
-      <p>ONAX AG - it solutions</p>
+      <div>ONAX AG - it solutions</div>
     </footer>
 
     <!-- JQuery -->
-    <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
     <!-- JQuery Onobtrusive Client Validation -->
-    <!-- <script src="~/Scripts/jquery.validate.min.js" type="text/javascript"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js" type="text/javascript"></script> -->
     <!-- Materialize -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site.js">//asp-append-version="true"</script>
   </body>
 </html>

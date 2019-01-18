@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,20 +19,25 @@ namespace TimeManager {
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services) {
       services.AddMvc()
-        .AddRazorPagesOptions(options => {
-          options.Conventions.AuthorizeFolder("/", "PermissionNormal");
-          options.Conventions.AuthorizeFolder("/Controlling", "PermissionAdvanced");
-          options.Conventions.AuthorizeFolder("/Users", "PermissionHigh");
+        .AddRazorPagesOptions(options =>
+        {
           // Set all permissions for the pages
           options.Conventions.AllowAnonymousToPage("/Index");
           options.Conventions.AllowAnonymousToPage("/Error");
+
+          options.Conventions.AuthorizePage("/OwnTimes", "PermissionNormal");
+
+          options.Conventions.AuthorizePage("/Controlling", "PermissionAdvanced");
+
+          options.Conventions.AuthorizePage("/Users", "PermissionHigh");
         })
         .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+      services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
       // Cookie Authentication
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
         options.LoginPath = "/Index";
-        options.AccessDeniedPath = "/Error";
+        options.AccessDeniedPath = "/Shared/Error";
         //options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
       });
 
@@ -49,7 +55,7 @@ namespace TimeManager {
       if (env.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
       } else {
-        app.UseExceptionHandler("/Error");
+        app.UseExceptionHandler("/Shared/Error");
         app.UseHsts();  // Forces HTTPS
       }
 

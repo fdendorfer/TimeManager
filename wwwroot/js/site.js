@@ -1,96 +1,93 @@
-﻿// Element Lists, which should not be auto initialized, because they need options
-let modalList = document.querySelectorAll("#absenceWindow, #overtimeWindow");
-modalList.forEach(elem => {
-  elem.classList.add("no-autoinit");
-});
-let datePickerList = document.querySelectorAll(
-  "#absenceWindow #dateFrom, #absenceWindow #dateTo, #overtimeWindow #date"
-);
-datePickerList.forEach(elem => {
-  elem.classList.add("no-autoinit");
-});
-let timePickerList = document.querySelectorAll(
-  "#absenceWindow #timeFrom, #absenceWindow #timeTo"
-);
-timePickerList.forEach(elem => {
-  elem.classList.add("no-autoinit");
+﻿document.addEventListener('DOMContentLoaded', function (e) {
+  materializeStuff();
 });
 
-// This initializes all Materialize components
-document.addEventListener("DOMContentLoaded", function(e) {
+function materializeStuff() {
+  // Element Lists, which should not be auto initialized, because they need options
+  let modalList = document.querySelectorAll('#absenceWindow, #overtimeWindow, #userWindow');
+  $(modalList).addClass('no-autoinit');
+  let datePickerList = document.querySelectorAll(
+    '#absenceWindow #dateFrom, #absenceWindow #dateTo, #overtimeWindow #date'
+  );
+  $(datePickerList).addClass('no-autoinit');
+  let timePickerList = document.querySelectorAll(
+    '#absenceWindow #timeFrom, #absenceWindow #timeTo'
+  );
+  $(timePickerList).addClass('no-autoinit');
+
   // Build Materialize modals
-  var buildModal = materializeBuilder(M.Modal, modalList, {
+  materializeBuilder(M.Modal, modalList, {
     onCloseStart: elem => {
-      elem.querySelector("form").reset();
+      elem.querySelector('form').reset();
       M.updateTextFields();
-      document.querySelectorAll(".field-validation-error").forEach(elem => {
-        elem.innerHTML = "";
+      document.querySelectorAll('.field-validation-error').forEach(elem => {
+        elem.innerHTML = '';
       });
     }
   });
   // Build Materialize datepickers
-  var buildDatepicker = materializeBuilder(M.Datepicker, datePickerList, {
-    format: "dd.mm.yyyy",
+  materializeBuilder(M.Datepicker, datePickerList, {
+    format: 'dd.mm.yyyy',
     firstDay: 1,
     showDaysInNextAndPreviousMonths: true,
-    container: "body",
+    container: 'body',
     i18n: {
-      cancel: "Abbrechen",
-      done: "Ok",
+      cancel: 'Abbrechen',
+      done: 'Ok',
       months: [
-        "Januar",
-        "Februar",
-        "März",
-        "April",
-        "Mai",
-        "Juni",
-        "Juli",
-        "August",
-        "September",
-        "Oktober",
-        "November",
-        "Dezember"
+        'Januar',
+        'Februar',
+        'März',
+        'April',
+        'Mai',
+        'Juni',
+        'Juli',
+        'August',
+        'September',
+        'Oktober',
+        'November',
+        'Dezember'
       ],
       monthsShort: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Dez"
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mai',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Dez'
       ],
       weekdays: [
-        "Sonntag",
-        "Montag",
-        "Dienstag",
-        "Mittwoch",
-        "Donnerstag",
-        "Freitag",
-        "Samstag"
+        'Sonntag',
+        'Montag',
+        'Dienstag',
+        'Mittwoch',
+        'Donnerstag',
+        'Freitag',
+        'Samstag'
       ],
-      weekdaysShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-      weekdaysAbbrev: ["S", "M", "D", "M", "D", "F", "S"]
+      weekdaysShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+      weekdaysAbbrev: ['S', 'M', 'D', 'M', 'D', 'F', 'S']
     }
   });
   // Build Materialize timepickers
-  var buildTimepicker = materializeBuilder(M.Timepicker, timePickerList, {
-    container: "body",
+  materializeBuilder(M.Timepicker, timePickerList, {
+    container: 'body',
     i18n: {
-      cancel: "Abbrechen",
-      done: "Ok"
+      cancel: 'Abbrechen',
+      done: 'Ok'
     },
     twelveHour: false
   });
 
   // Let Materialize search for unitialized components, without class no-autoinit
   M.AutoInit();
-});
+}
 
 // Helper function to build multiple components for the same type with the same options
 function materializeBuilder(component, elements, options) {
@@ -100,34 +97,179 @@ function materializeBuilder(component, elements, options) {
 }
 
 // This prevents the form from submitting normally, because it would reload the whole page, even when there were errors on the page. Like this only the error fields get switched
-$('#absenceForm, #overtimeForm').on('submit', function(e) {
+$('#absenceForm, #overtimeForm, #userForm').on('submit', function (e) {
   e.preventDefault();
   $.ajax({
     url: $(this).attr('action') || window.location.pathname,
     type: 'POST',
     data: $(e.target).serialize(),
-    success: function(data, textStatus, jqXHR) {
-      if(jqXHR.status == 202)
+    success: function (data, textStatus, jqXHR) {
+      if (jqXHR.status === 202)
         location.reload();
 
-      let parser = new DOMParser();
       let errorSpansOld = $('.red-text');
       let errorSpansNew = $(data).find('.red-text');
-      for(var i = 0; i < errorSpansNew.length; i++) {
+      for (var i = 0; i < errorSpansNew.length; i++) {
         errorSpansOld[i].outerHTML = errorSpansNew[i].outerHTML;
       }
     },
-    error: function(jXHR, textStatus, errorThrown) {
+    error: function (jXHR, textStatus, errorThrown) {
       alert(errorThrown);
       location.reload();
     }
   });
 });
 
-$("input[name='isIO']").on("change", function(e){
+
+// * OwnTimes
+// Fills absencePartial, when opened for editing
+function absenceEdit(id) {
+  $.ajax({
+    url: '/OwnTimes?handler=Absence&id=' + id,
+    success: function (data) {
+      let inputs = $('#absenceWindow input');
+      let json = $.parseJSON(data);
+      $(inputs[0]).val(json.AbsenceDateFrom);
+      $(inputs[1]).val(json.AbsenceDateTo);
+      $(inputs[2]).prop('checked', json.FullDay);
+      $(inputs[3]).val(json.AbsenceTimeFrom);
+      $(inputs[4]).val(json.AbsenceTimeTo);
+      $(inputs[5]).prop('checked', json.Negative);
+
+      // Radio buttons Reason
+      let reason = $(inputs).filter(`[value='${json.OtherReason}']`);
+      if (reason.length > 0) {
+        $(reason[0]).prop('checked', true);
+      } else {
+        $(inputs[11]).prop('checked', true);
+        $(inputs[12]).val(json.OtherReason);
+      }
+      $(inputs[13]).prop('checked', json.Approved);
+      $(inputs[14]).val(json.ID);
+
+      $('#absenceWindow').modal('open');
+    }
+  });
+}
+
+function overtimeEdit(id) {
+  $('#overtimeWindow').modal('open');
+  $.ajax({
+    url: '/OwnTimes?handler=Overtime&id=' + id,
+    success: function (data) {
+      let inputs = $('#overtimeWindow input');
+      let json = $.parseJSON(data);
+      $(inputs[0]).val(json.Date);
+      $(inputs[1]).val(json.Hours);
+      $(inputs[2]).val(json.Customer);
+
+      $('#overtimeWindow select').find(`option[value="${json.IdOvertimeDetail.toUpperCase()}"]`).prop('selected', true);
+      $('#overtimeWindow select').formSelect();
+      $(inputs[4]).val(json.ID);
+
+    }
+  });
+}
+
+function absenceDelete(id) {
+  $.ajax({
+    url: '/OwnTimes?handler=Absence&id=' + id,
+    method: 'DELETE',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader(
+        'XSRF-TOKEN',
+        $('input:hidden[name="__RequestVerificationToken"]').val()
+      );
+    },
+    success: function () {
+      location.reload();
+    }
+  });
+}
+
+function overtimeDelete(id) {
+  $.ajax({
+    url: '/OwnTimes?handler=Overtime&id=' + id,
+    method: 'DELETE',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader(
+        'XSRF-TOKEN',
+        $('input:hidden[name="__RequestVerificationToken"]').val()
+      );
+    },
+    success: function () {
+      location.reload();
+    }
+  });
+}
+
+
+// * Controlling
+$('#Controlling #ferienliste').click((e) => {
+  window.open('/Controlling?handler=Ferienliste', '_blank');
+});
+
+$('#Controlling #überzeitkontrolle').click((e) => {
+  window.open('/Controlling?handler=Überzeitkontrolle', '_blank');
+});
+
+// An advanced user can approve the absences in /Controlling with the checkboxes
+$('input[name="isIO"]').on('change', function (e) {
   $.ajax({
     url: $(this).attr('action') || window.location.pathname,
     type: 'POST',
-    data: { idAbsence: $(this).attr('data-id-absence'), value: e.currentTarget.checked }
-  })
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader(
+        'XSRF-TOKEN',
+        $('input:hidden[name="__RequestVerificationToken"]').val()
+      );
+    },
+    data: {
+      idAbsence: $(this).attr('data-id-absence'),
+      value: e.currentTarget.checked
+    },
+    success: function () {
+      location.reload();
+    }
+  });
 });
+
+
+// * Users
+function userEdit(id) {
+  $('#userWindow').modal('open');
+  $.ajax({
+    url: '/Users?id=' + id,
+    success: function (data) {
+      let inputs = $('#userWindow input');
+      let json = $.parseJSON(data);
+      $(inputs[0]).val(json.Username);
+      $(inputs[2]).val(json.Firstname);
+      $(inputs[3]).val(json.Lastname);
+      $('#userWindow select:eq(0)').find(`option[value="${json.Department}"]`).prop('selected', true);
+      $('#userWindow select:eq(0)').formSelect();
+      $(inputs[5]).val(json.Holidays);
+      $(inputs[6]).prop('checked', json.Deactivated);
+
+      $('#userWindow select:eq(1)').find(`option[value="${json.IdPermission.toUpperCase()}"]`).prop('selected', true);
+      $('#userWindow select:eq(1)').formSelect();
+      $(inputs[8]).val(json.ID);
+    }
+  });
+}
+
+function userDelete(id) {
+  $.ajax({
+    url: '/Users?id=' + id,
+    method: 'DELETE',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader(
+        'XSRF-TOKEN',
+        $('input:hidden[name="__RequestVerificationToken"]').val()
+      );
+    },
+    success: function () {
+      location.reload();
+    }
+  });
+}

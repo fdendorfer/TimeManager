@@ -3,11 +3,6 @@
   using (var db = new DatabaseContext())
   {
     Model.reasons = db.AbsenceDetail.Select(item => item.Reason).ToArray();
-    Model.rates = db.OvertimeDetail.Select(item => new SelectListItem
-    {
-      Text = item.Description,
-      Value = item.ID.ToString()
-    }).ToList();
   }
 }
 
@@ -44,6 +39,16 @@
         <span class="red-text" asp-validation-for="Absence.AbsenceTimeTo" style="grid-column: 4 / span 2"></span>
       </div>
 
+      <div><span>Negative Tage</span></div>
+      <div>
+        <!-- label wrapper and empty span is required for materialize -->
+        <label>
+          <input type="checkbox" class="filled-in" asp-for="Absence.Negative" />
+          <span></span>
+        </label>
+      </div>
+
+
       <div><span>Grund:</span></div>
         <!-- nested Grid -->
       <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
@@ -56,7 +61,7 @@
           }
         <label>
           <input type="radio" asp-for="Absence.Reason" value="Anderer" />
-          <span><input id="reasonText" type="text" placeholder="Anderer" asp-for="Absence.OtherReason" /></span>
+          <span><input type="text" placeholder="Anderer" asp-for="Absence.OtherReason" /></span>
         </label>
         <span class="red-text" asp-validation-for="Absence.Reason"></span>
         <span class="red-text" asp-validation-for="Absence.OtherReason"></span>
@@ -66,14 +71,22 @@
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
-          <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" disabled />
+          @if (User.IsInRole("Advanced") || User.IsInRole("High"))
+          {
+            <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" />
+          } else
+          {
+            <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" disabled />
+          }
           <span></span>
         </label>
       </div>
+      
+      <input type="hidden" asp-for="Absence.ID" />
     </form>
   </div>
   <div class="modal-footer">
     <button class="btn-small" onclick="$('#absenceWindow form').submit();">OK</button>
-    <button class="btn-small" onclick="M.Modal.getInstance(document.querySelector('#absenceWindow')).close();">Abbrechen</button>
+    <button class="btn-small" onclick="$('#absenceWindow').modal('close');">Abbrechen</button>
   </div>
 </div>

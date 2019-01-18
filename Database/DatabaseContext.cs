@@ -11,6 +11,7 @@ namespace TimeManager.Database {
     public DbSet<UserModel> User { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+      optionsBuilder.EnableSensitiveDataLogging(true);
       optionsBuilder.UseSqlServer("Server=localhost;Database=TimeManager;Trusted_Connection=True");
       //optionsBuilder.UseSqlServer("Server=localhost\\Home;Database=TimeManager;User Id=sa;Password=vawbuNHGNPKCZ77+");
     }

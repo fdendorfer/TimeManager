@@ -28,7 +28,7 @@ CREATE TABLE [Permission] (
 	[ID] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 	[Level] TINYINT,
 	[Description] NVARCHAR(100),
-	[DescriptionLong] NVARCHAR(MAX)
+	[DescriptionLong] NVARCHAR(MAX),
 )
 GO
 -- **************************************************
@@ -43,7 +43,9 @@ CREATE TABLE [User] (
 	[Lastname] NVARCHAR(100),
 	[Username] NVARCHAR(100),
 	[Password] VARBINARY(8000),
-  [Department] NVARCHAR(20)
+  [Department] NVARCHAR(20),
+  [Holidays] DECIMAL(18, 2),
+  [Deactivated] bit,
 )
 GO
 -- **************************************************
@@ -53,7 +55,7 @@ GO
 -- **************************************************
 CREATE TABLE [AbsenceDetail] (	
 	[ID] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
-	[Reason] NVARCHAR(100)
+	[Reason] NVARCHAR(100),
 )
 GO
 -- **************************************************
@@ -64,7 +66,7 @@ GO
 CREATE TABLE OvertimeDetail (
 	[ID] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 	[Description] NVARCHAR(100),
-	[Rate] TINYINT
+	[Rate] DECIMAL(4, 2),
 )
 GO
 -- **************************************************
@@ -78,8 +80,10 @@ CREATE TABLE Absence (
 	[IdAbsenceDetail] UNIQUEIDENTIFIER,
 	[AbsentFrom] SMALLDATETIME,
 	[AbsentTo] SMALLDATETIME,
+  [TotalDays] DECIMAL(18, 2),
 	[Reason] NVARCHAR(100),
 	[Approved] BIT,
+	[CreatedOn] DATETIME,
 )
 GO
 -- **************************************************
@@ -93,10 +97,16 @@ CREATE TABLE Overtime (
 	[IdUser] UNIQUEIDENTIFIER,
 	[Customer] NVARCHAR(100),
 	[Date] SMALLDATETIME,
-	[Hours] DECIMAL(18, 2)
+	[Hours] DECIMAL(18, 2),
+	[CreatedOn] DATETIME,
 )
 GO
 -- **************************************************
+
+
+
+
+
 
 -- --------------------------------------------------
 -- INSERTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -115,10 +125,10 @@ GO
 -- **************************************************
 -- Insert Users
 -- **************************************************
-INSERT INTO [USER] ([IdPermission], [Firstname], [Lastname], [Username], [Password])
-	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1)),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1)),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1))
+INSERT INTO [USER] ([IdPermission], [Firstname], [Lastname], [Username], [Password], [Department], [Holidays], [Deactivated])
+	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Software', 25, 0),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Software', 25, 0),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Technik', 25, 0)
 GO
 -- **************************************************
 
@@ -137,10 +147,10 @@ GO
 -- **************************************************
 -- Insert Users
 -- **************************************************
-INSERT INTO [OvertimeDetail] ([Description], [Rate])
-	VALUES ('Werktag, VOR 7:00 und NACH 18:00 Uhr' + CHAR(13) + 'ohne Zuschlag', 0),
-	('SAMSTAG, ganzer Tag' + CHAR(13) + 'mit 25% Zuschlag', 25),
-	('SONNTAG, ganzer Tag' + CHAR(13) + 'mit 50% Zuschlag', 50)
+INSERT INTO [OvertimeDetail] ([ID], [Description], [Rate])
+	VALUES ('84B41D45-AF72-405F-9C7D-AFFC05A0E5DC', 'Werktag, VOR 7:00 und NACH 18:00 Uhr ohne Zuschlag', 1.00),
+	('63AD4F14-589E-4C77-8601-A80EEBB20FB7','SAMSTAG, ganzer Tag mit 25% Zuschlag', 1.25),
+	('8923C12A-2F13-400F-ABD9-4B529A17A011','SONNTAG, ganzer Tag mit 50% Zuschlag', 1.50)
 GO
 -- **************************************************
 
