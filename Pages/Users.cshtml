@@ -1,12 +1,8 @@
 ﻿@page
 @model UsersPageModel
 @{ ViewData["Title"] = "Benutzer"; }
-@{ 
-  bool DeaktivatedFilter = true;
-
-}
 <script>
-  document.querySelector('#userWindow form').reset();
+  writeUsersTable();
 </script>
 <div id="Users">
   <h1>Benutzerverwaltung</h1>
@@ -16,15 +12,16 @@
   <!-- UserWindow -->
   <partial name="/Pages/Users/_UserPartial.cshtml" />
 
-  <!-- UsersGrid -->
   <div>
     <br />
     <h4 style="display: contents;">Benutzer</h4>
     <label class="right">
-      <input class="filled-in" type="checkbox" asp-for="@DeaktivatedFilter" />
-      <span>Nur aktive Benutzer</span>
+      <input class="filled-in" type="checkbox" checked />
+      <span>Filter aktive Benutzer</span>
     </label>
   </div>
+
+  <!-- UsersGrid -->
   <div class="table-container responsive-table">
     <table>
       <thead>
@@ -37,32 +34,7 @@
         </tr>
       </thead>
       <tbody>
-        @{
-          List<Model.UserModel> users;
-          using (var db = new DatabaseContext())
-          {
-            users = (from u in db.User
-                     where u.Deactivated == false
-                     select u).ToList();
-          }
-          foreach (var item in users)
-          {
-            <tr>
-              <td>@item.Username</td>
-              <td>@item.Firstname</td>
-              <td>@item.Lastname</td>
-              <td>@item.Department</td>
-              <td>
-                <button type="button" class="btn-small" onclick="userEdit('@item.ID')">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button type="button" class="btn-small" onclick="userDelete('@item.ID')">
-                  <i class="material-icons">delete</i>
-                </button>
-              </td>
-            </tr>
-          }
-        }
+        <!-- JS replaces this tbody -->
       </tbody>
     </table>
   </div>

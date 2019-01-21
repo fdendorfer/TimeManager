@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeManager.Database;
@@ -13,6 +13,40 @@ namespace TimeManager.Pages
 {
   public class ControllingPageModel : PageModel
   {
+    // Local variables
+    public List<ControllingModel> Absences;
+
+    public IActionResult OnGet([FromQuery] string uncheckedOnly)
+    {
+      if (uncheckedOnly == null)
+        return Page();
+
+      using (var db = new DatabaseContext())
+      {
+        UserModel user = db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
+        Absences = (from a in db.Absence
+                    join u in db.User on a.IdUser
+                    equals u.ID
+                    where u.Department == user.Department
+                    where u.Deactivated == false
+                    orderby a.AbsentFrom
+                    select new ControllingModel()
+                    {
+                      IdUser = u.ID,
+                      IdAbsence = a.ID,
+                      Name = u.Username,
+                      AbsentFrom = a.AbsentFrom,
+                      AbsentTo = a.AbsentTo,
+                      Reason = a.Reason,
+                      Approved = a.Approved
+                    }).ToList();
+        if (uncheckedOnly == "true")
+          Absences = Absences.Where(a => a.Approved == false).ToList();
+
+        return new JsonResult(Absences);
+      }
+    }
+
     public IActionResult OnPost(string idAbsence, bool value)
     {
       using (var db = new DatabaseContext())

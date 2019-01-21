@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,17 +13,21 @@ namespace TimeManager.Model
 
     public string IdPermission { get; set; }
 
+    [Required(ErrorMessage = "Benutzername darf nicht leer sein")]
     public string Username { get; set; }
 
+    [Required(ErrorMessage = "Vorname darf nicht leer sein")]
     public string Firstname { get; set; }
 
+    [Required(ErrorMessage = "Nachname darf nicht leer sein")]
     public string Lastname { get; set; }
 
     public string Password { get; set; }
 
     public string Department { get; set; }
 
-    public decimal Holidays { get; set; }
+    [Required(ErrorMessage = "Ferientage darf nicht leer sein")]
+    public string Holidays { get; set; }
 
     public bool Deactivated { get; set; }
   }

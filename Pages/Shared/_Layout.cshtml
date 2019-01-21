@@ -29,79 +29,84 @@
 }
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TimeManager</title>
-    <!-- Materialize -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
-    <link rel="stylesheet" href="~/css/materialize.css" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - TimeManager</title>
+  <!-- Materialize -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+  <link rel="stylesheet" href="~/css/materialize.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-    <link rel="stylesheet" href="~/css/site.css" />
-  </head>
+  <link rel="stylesheet" href="~/css/site.css" />
 
-  <body>
-    <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post"></form>
-    <nav>
-      <div class="nav-wrapper">
-        <ul class="left">
-          @if (permissionAnonym)
-          {
-            <li>
-              <a href="/">Index</a>
-            </li>
-          }
-          @if (permissionNormal)
-          {
-            <li>
-              <a href="/OwnTimes">OwnTimes</a>
-            </li>
-          }
-          @if (permissionAdvanced)
-          {
-            <li>
-              <a href="/Controlling">Controlling</a>
-            </li>
-          }
-          @if (permissionHigh)
-          {
-            <li>
-              <a href="/Users">Users</a>
-            </li>
-          }
-        </ul>
-        <ul class="right">
-          @if (!permissionAnonym)
-          {
-            <li>
-              <span>Hallo @ViewBag.CurrentUser.Username</span>
-            </li>
-            <li onclick="logoutForm.submit();">
-              <a>Logout</a>
-            </li>
-          }
-        </ul>
-      </div>
-    </nav>
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
 
-    <!-- Page content -->
-    <div class="page-container">
-      @RenderBody()
+  <script src="~/js/site.js">//asp-append-version="true"</script>
+</head>
+
+<body>
+  <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post"></form>
+  <nav>
+    <div class="nav-wrapper">
+      <ul class="left">
+        @if (permissionAnonym)
+        {
+          <li>
+            <a href="/">Index</a>
+          </li>
+        }
+        @if (permissionNormal)
+        {
+          <li>
+            <a href="/OwnTimes">OwnTimes</a>
+          </li>
+        }
+        @if (permissionAdvanced)
+        {
+          <li>
+            <a href="/Controlling">Controlling</a>
+          </li>
+        }
+        @if (permissionHigh)
+        {
+          <li>
+            <a href="/Users">Users</a>
+          </li>
+        }
+      </ul>
+      <ul class="right">
+        @if (!permissionAnonym)
+        {
+          <li>
+            <span>Hallo @ViewBag.CurrentUser.Username</span>
+          </li>
+          <li onclick="logoutForm.submit();">
+            <a>Logout</a>
+          </li>
+        }
+      </ul>
     </div>
+  </nav>
 
-    <footer>
-      <div>ONAX AG - it solutions</div>
-    </footer>
+  <!-- Page content -->
+  <div class="page-container">
+    @RenderBody()
+  </div>
 
-    <!-- JQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
-    <!-- JQuery Onobtrusive Client Validation -->
-    <!-- Materialize -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <footer>
+    <div>ONAX AG - it solutions</div>
+  </footer>
 
-    <script src="~/js/site.js">//asp-append-version="true"</script>
-  </body>
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
+  <!-- JQuery Onobtrusive Client Validation -->
+  <!-- Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script src="~/js/site.js">//asp-append-version="true"</script>
+</body>
 </html>

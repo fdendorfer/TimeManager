@@ -5,13 +5,26 @@
 @{ 
   UserModel user = (UserModel)ViewData["CurrentUser"];
 }
+<script>
+  writeControllingTable('true');
+</script>
+
 <div id="Controlling">
   <h1>Controlling</h1>
 
   <a id="ferienliste" class="btn">Ferienliste</a>
   <a id="überzeitkontrolle" class="btn">Überzeitkontrolle</a>
+  
+  <div>
+    <br />
+    <h4 style="display: contents;">Abwesenheiten</h4>
+    <label class="right">
+      <input class="filled-in" type="checkbox" checked />
+      <span>Nur ungeprüfte</span>
+    </label>
+  </div>
 
-  <h4>Abwesenheiten</h4>
+  <!-- Absence grid -->
   <div class="table-container responsive-table">
     <table>
       <thead>
@@ -24,49 +37,7 @@
         </tr>
       </thead>
       <tbody>
-        @{
-          List<ControllingModel> absences;
-          using (var db = new DatabaseContext())
-          {
-            absences = (from a in db.Absence
-                        join u in db.User on a.IdUser
-                        equals u.ID
-                        where a.Approved == false
-                        where u.Department == user.Department
-                        orderby a.AbsentFrom
-                        select new ControllingModel()
-                        {
-                          IdUser = u.ID,
-                          IdAbsence = a.ID,
-                          Name = u.Username,
-                          AbsentFrom = a.AbsentFrom,
-                          AbsentTo = a.AbsentTo,
-                          Reason = a.Reason,
-                          Approved = a.Approved
-                        }).ToList();
-          }
-          foreach (var item in absences)
-          {
-            <tr>
-              <td>@item.Name</td>
-              <td>@item.AbsentFrom</td>
-              <td>@item.AbsentTo</td>
-              <td>@item.Reason</td>
-              <td>
-                <label>
-                  @if (item.Approved)
-                  {
-                    <input name="isIO" data-id-absence="@item.IdAbsence" type="checkbox" class="filled-in" checked />
-                  } else
-                  {
-                    <input name="isIO" data-id-absence="@item.IdAbsence" type="checkbox" class="filled-in" />
-                  }
-                  <span></span>
-                </label>
-              </td>
-            </tr>
-          }
-        }
+        <!-- JS replaces this tbody -->
       </tbody>
     </table>
   </div>

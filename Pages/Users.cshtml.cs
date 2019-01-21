@@ -19,16 +19,30 @@ namespace TimeManager.Pages
     // Local variables
     public List<SelectListItem> departments = new List<SelectListItem>();
     public List<SelectListItem> permissions;
+    public List<UserModel> Users;
 
     // Field used for validation
     [BindProperty]
     public UserValidation ValUser { get; set; } = new UserValidation();
 
-    // Get single user
-    public IActionResult OnGet([FromQuery] string id)
+    // Set id for single user and onlyActive json of all users
+    public IActionResult OnGet([FromQuery] string id, [FromQuery] string onlyActive)
     {
-      if (id == null)
+      if (id == null && onlyActive == null)
         return Page();
+
+      if (onlyActive != null)
+      {
+        using (var db = new DatabaseContext())
+        {
+          Users = (from u in db.User
+                   select u).ToList();
+          if (onlyActive == "true")
+            Users = Users.Where(u => u.Deactivated == false).ToList();
+
+          return new JsonResult(Users);
+        }
+      }
 
       using (var db = new DatabaseContext())
       {
@@ -44,7 +58,7 @@ namespace TimeManager.Pages
         ValUser.Firstname = user.Firstname;
         ValUser.Lastname = user.Lastname;
         ValUser.Department = user.Department;
-        ValUser.Holidays = user.Holidays;
+        ValUser.Holidays = user.Holidays.ToString();
         ValUser.Deactivated = user.Deactivated;
 
         return new JsonResult(JsonConvert.SerializeObject(ValUser));
@@ -68,11 +82,11 @@ namespace TimeManager.Pages
             Lastname = ValUser.Lastname,
             Username = ValUser.Username,
             Department = ValUser.Department,
-            Holidays = ValUser.Holidays,
+            Holidays = Convert.ToDecimal(ValUser.Holidays),
             Deactivated = ValUser.Deactivated
           };
           var testUser = db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
-          if(ValUser.Password == null && testUser != null)
+          if (ValUser.Password == null && testUser != null)
           {
             user.Password = testUser.Password;
           } else
@@ -91,8 +105,9 @@ namespace TimeManager.Pages
           }
           db.SaveChanges();
         }
-        return Page(); // HTTP 202 ACCEPTED
+        return StatusCode(202); // HTTP 202 ACCEPTED
       }
+
       foreach (var item in ModelState.Values.Where(v => v.Errors != null))
       {
         foreach (var item2 in item.Errors)
@@ -106,7 +121,7 @@ namespace TimeManager.Pages
     // Deactivate User
     public void OnDelete([FromQuery] string id)
     {
-      using(var db = new DatabaseContext())
+      using (var db = new DatabaseContext())
       {
         db.User.Find(new Guid(id)).Deactivated = true;
         db.SaveChanges();

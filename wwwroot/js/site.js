@@ -114,7 +114,7 @@ $('#absenceForm, #overtimeForm, #userForm').on('submit', function (e) {
       }
     },
     error: function (jXHR, textStatus, errorThrown) {
-      alert(errorThrown);
+      alert('Fehler bei der Verarbeitung des Formulars. Überprüfen sie, ob ihre Aktion durchgeführt wurde und versuchen Sie es allenfalls erneut.');
       location.reload();
     }
   });
@@ -205,6 +205,41 @@ function overtimeDelete(id) {
 
 
 // * Controlling
+// Checkbox click listener to filter table
+$('#Controlling input[type="checkbox"]').click(function () {
+  let uncheckedOnly = $(this).prop('checked');
+  writeControllingTable(uncheckedOnly);
+});
+
+function writeControllingTable(uncheckedOnly) {
+  // REmove old rows
+  $('#Controlling tbody tr').remove();
+
+  // call OnGet() to get json with all users filtered
+  $.ajax({
+    url: '/Controlling?uncheckedOnly=' + uncheckedOnly,
+    success: (data) => {
+      // Table selector
+      let table = document.querySelector('#Controlling tbody');
+      // For each line in json
+      data.forEach(function (e) {
+        // New row
+        let row = table.insertRow(table.rows.length);
+        let i = 0;
+        // Inserting values from json into table
+        row.insertCell(i).appendChild(document.createTextNode(e.name));
+        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentFrom).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(e.reason));
+        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" /><span></span></label>`);
+        if (e.approved)
+          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked /><span></span></label>`);
+        row.insertCell(++i).appendChild(checkbox[0]);
+      });
+    }
+  });
+}
+
 $('#Controlling #ferienliste').click((e) => {
   window.open('/Controlling?handler=Ferienliste', '_blank');
 });
@@ -214,7 +249,7 @@ $('#Controlling #überzeitkontrolle').click((e) => {
 });
 
 // An advanced user can approve the absences in /Controlling with the checkboxes
-$('input[name="isIO"]').on('change', function (e) {
+$('#Controlling').on('change', 'input[name="isIO"]', function (e) {
   $.ajax({
     url: $(this).attr('action') || window.location.pathname,
     type: 'POST',
@@ -236,6 +271,48 @@ $('input[name="isIO"]').on('change', function (e) {
 
 
 // * Users
+// Checkbox click listener to filter table
+$('#Users input[type="checkbox"]').click(function () {
+  let activeFilter = $(this).prop('checked');
+  writeUsersTable(activeFilter);
+});
+
+function writeUsersTable(activeFilter) {
+  // Remove old rows
+  $('#Users tbody tr').remove();
+
+  // Call OnGet() to get json with all users filtered
+  $.ajax({
+    url: '/Users?onlyActive=' + activeFilter,
+    success: (data) => {
+      // Table selector
+      let table = document.querySelector('#Users tbody');
+      // For each line in json
+      data.forEach(function (e) {
+        // New row
+        let row = table.insertRow(table.rows.length);
+        let i = 0;
+        // Inserting values from json into table
+        row.insertCell(i).appendChild(document.createTextNode(e.username));
+        row.insertCell(++i).appendChild(document.createTextNode(e.firstname));
+        row.insertCell(++i).appendChild(document.createTextNode(e.lastname));
+        row.insertCell(++i).appendChild(document.createTextNode(e.department));
+        // Edit and delete buttons
+        let buttons = $(`<div><button type="button" class="btn-small" onclick="userEdit ('${e.id}')">
+<i class="material-icons">edit</i>
+</button>
+<button type="button" class="btn-small" onclick="userDelete('${e.id}')">
+<i class="material-icons">delete</i>
+</button></div>`);
+        row.insertCell(++i).appendChild(buttons[0]);
+      });
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      alert('An error has occured');
+    }
+  });
+}
+
 function userEdit(id) {
   $('#userWindow').modal('open');
   $.ajax({

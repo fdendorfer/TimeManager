@@ -15,8 +15,8 @@
 
 <div id="userWindow" class="modal modal-fixed-footer">
   <div class="modal-content">
-    <h4>Neuer Benutzer</h4>
-    <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
+    <h4>Benutzer erstellen / bearbeiten</h4>
+    <form id="userForm" method="POST" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
       <div>
         <span>Benutzername:</span>
         <input asp-for="ValUser.Username" />
@@ -49,14 +49,14 @@
 
       <div>
         <span>Ferientage:</span>
-        <input asp-for="ValUser.Holidays" />
+        <input asp-for="ValUser.Holidays" type="number" />
         <span class="red-text" asp-validation-for="ValUser.Holidays"></span>
       </div>
 
       <div>
         <span>Deaktiviert:</span>
         <label>
-          <input asp-for="ValUser.Deactivated" />
+          <input type="checkbox" class="filled-in" asp-for="ValUser.Deactivated" />
           <span></span>
         </label>
       </div>
