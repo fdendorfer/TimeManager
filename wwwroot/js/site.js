@@ -122,6 +122,13 @@ $('#absenceForm, #overtimeForm, #userForm').on('submit', function (e) {
 
 
 // * OwnTimes
+// Checkbox and Select listener to filter tables
+$('#OwnTimes input[type="checkbox"], #OwnTimes select').click(function () {
+  let last30days = $($(this).filter('input').prop('checked'));
+  let selectedUser = $($(this).filter('select').val());
+  writeOwnTimesTables(last30days, selectedUser);
+});
+
 // Fills absencePartial, when opened for editing
 function absenceEdit(id) {
   $.ajax({

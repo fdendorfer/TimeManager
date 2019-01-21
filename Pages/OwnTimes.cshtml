@@ -2,30 +2,35 @@
 @model OwnTimesPageModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
 <script>
-  /*writeOwnAbsences();
-  writeOwnOvertimes();*/
+    /*writeOwnAbsences();
+    writeOwnOvertimes();*/
 </script>
 <div id="OwnTimes">
   <h1>Eigene Zeiten</h1>
 
   <a class="btn modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
   <a class="btn modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
-  @{ 
-    if(User.IsInRole("Advanced") || User.IsInRole("High"))
+  @{
+    if (User.IsInRole("Advanced") || User.IsInRole("High"))
     {
-      <select id="userDropdown" class="right" style="width: fit-content;">
-        @{ 
-          using (var db = new DatabaseContext()) {
+      <select id="userDropdown" class="right browser-default btn" style="width: fit-content;">
+        @{
+          using (var db = new DatabaseContext())
+          {
             var userList = (from u in db.User select u).ToList();
             foreach (var item in userList)
             {
-              <option><a href="?user=@item.ID">@item.Username</a></option>
+              <option value="@item.ID">@item.Username</option>
             }
           }
         }
       </select>
     }
   }
+  <label class="right">
+    <input type="checkbox" class="filled-in" checked />
+    <span style="padding-right: 1em;">Letze 30 Tage</span>
+  </label>
 
   <!-- AbsenceWindow -->
   <partial name="/Pages/OwnTimes/_AbsencePartial.cshtml" />
