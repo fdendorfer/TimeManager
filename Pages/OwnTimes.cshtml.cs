@@ -21,12 +21,43 @@ namespace TimeManager.Pages
     // Local variables
     public string[] reasons;
     public List<SelectListItem> rates;
+    public List<AbsenceModel> absences;
+    public List<dynamic> overtimes;
 
     // Fields used for validation
     [BindProperty]
     public AbsenceValidation Absence { get; set; } = new AbsenceValidation();
     [BindProperty]
     public OvertimeValidation Overtime { get; set; } = new OvertimeValidation();
+
+    public IActionResult OnGet([FromQuery] string last30days, [FromQuery] string selectedUser)
+    {
+      if (last30days == null && selectedUser == null)
+        return Page();
+
+      dynamic[] result = new dynamic[2];
+      using (var db = new DatabaseContext())
+      {
+        absences = (from a in db.Absence
+                    where (a.IdUser == new Guid(selectedUser))
+                    orderby a.AbsentFrom
+                    select a).ToList();
+        if (last30days == "true")
+          absences = absences.Where(a => (DateTime.Now - a.CreatedOn).TotalDays < 30).ToList();
+        result[0] = absences;
+
+        overtimes = (from o in db.Overtime
+                     join od in db.OvertimeDetail on o.IdOvertimeDetail equals od.ID
+                     where (o.IdUser == new Guid(selectedUser))
+                     orderby o.Date
+                     select new { o, od }).ToList<dynamic>();
+        if (last30days == "true")
+          overtimes = overtimes.Where(d => (DateTime.Now - d.o.CreatedOn).TotalDays < 30).ToList();
+        result[1] = overtimes;
+      }
+
+      return new JsonResult(result);
+    }
 
     public async Task<JsonResult> OnGetAbsence([FromQuery] string id)
     {
@@ -64,11 +95,12 @@ namespace TimeManager.Pages
     {
       using (var db = new DatabaseContext())
       {
-        return await Task.Run(() => {
+        return await Task.Run(() =>
+        {
           Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
           var overtime = (from o in db.Overtime
-                         where o.ID == new Guid(id)
-                         select o).Single();
+                          where o.ID == new Guid(id)
+                          select o).Single();
 
           // Filling the overtimePartial with existing values
           Overtime.ID = overtime.ID.ToString();

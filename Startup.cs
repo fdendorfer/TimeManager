@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,19 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TimeManager.Database;
 
-namespace TimeManager {
-  public class Startup {
-    public Startup(IConfiguration configuration) {
+namespace TimeManager
+{
+  public class Startup
+  {
+    public Startup(IConfiguration configuration)
+    {
       Configuration = configuration;
     }
 
     public IConfiguration Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services) {
-      services.AddMvc()
-        .AddRazorPagesOptions(options =>
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddMvc().AddRazorPagesOptions(options =>
         {
           // Set all permissions for the pages
           options.Conventions.AllowAnonymousToPage("/Index");
@@ -30,19 +33,21 @@ namespace TimeManager {
           options.Conventions.AuthorizePage("/Controlling", "PermissionAdvanced");
 
           options.Conventions.AuthorizePage("/Users", "PermissionHigh");
-        })
-        .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
       services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
       // Cookie Authentication
-      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+      {
         options.LoginPath = "/Index";
         options.AccessDeniedPath = "/Shared/Error";
         //options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
       });
 
       // Roles Authorization
-      services.AddAuthorization(options => {
+      services.AddAuthorization(options =>
+      {
         options.DefaultPolicy = new AuthorizationPolicyBuilder("Cookies").RequireAuthenticatedUser().Build();
         options.AddPolicy("PermissionNormal", policy => policy.RequireRole("Normal", "Advanced", "High"));
         options.AddPolicy("PermissionAdvanced", policy => policy.RequireRole("Advanced", "High"));
@@ -51,13 +56,17 @@ namespace TimeManager {
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
-      if (env.IsDevelopment()) {
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+      if (env.IsDevelopment())
+      {
         app.UseDeveloperExceptionPage();
-      } else {
+      } else
+      {
         app.UseExceptionHandler("/Shared/Error");
         app.UseHsts();  // Forces HTTPS
       }
+      app.UseDeveloperExceptionPage();
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();

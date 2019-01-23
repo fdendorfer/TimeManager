@@ -2,7 +2,7 @@
 @model UsersPageModel
 @{ ViewData["Title"] = "Benutzer"; }
 <script>
-  writeUsersTable();
+  writeUsersTable('true');
 </script>
 <div id="Users">
   <h1>Benutzerverwaltung</h1>
@@ -16,7 +16,7 @@
     <br />
     <h4 style="display: contents;">Benutzer</h4>
     <label class="right">
-      <input class="filled-in" type="checkbox" checked />
+      <input id="filter" class="filled-in" type="checkbox" checked />
       <span>Filter aktive Benutzer</span>
     </label>
   </div>

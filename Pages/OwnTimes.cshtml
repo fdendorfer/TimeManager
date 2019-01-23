@@ -2,8 +2,7 @@
 @model OwnTimesPageModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
 <script>
-    /*writeOwnAbsences();
-    writeOwnOvertimes();*/
+  writeOwnTimesTables('true', '@User.FindFirst(ClaimTypes.NameIdentifier).Value');
 </script>
 <div id="OwnTimes">
   <h1>Eigene Zeiten</h1>
@@ -20,7 +19,13 @@
             var userList = (from u in db.User select u).ToList();
             foreach (var item in userList)
             {
-              <option value="@item.ID">@item.Username</option>
+              if (item.ID.ToString() == @User.FindFirst(ClaimTypes.NameIdentifier).Value)
+              {
+                <option selected value="@item.ID">@item.Username</option>
+              } else
+              {
+                <option value="@item.ID">@item.Username</option>
+              }
             }
           }
         }
@@ -28,7 +33,7 @@
     }
   }
   <label class="right">
-    <input type="checkbox" class="filled-in" checked />
+    <input id="filter" type="checkbox" class="filled-in" checked />
     <span style="padding-right: 1em;">Letze 30 Tage</span>
   </label>
 
@@ -51,44 +56,7 @@
         </tr>
       </thead>
       <tbody style="--height: 15vh">
-        @{
-          List<Model.AbsenceModel> absences;
-          using (var db = new DatabaseContext())
-          {
-            absences = (from a in db.Absence
-                        where (a.IdUser == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)) && ((a.CreatedOn - DateTime.Now).TotalDays < 30)
-                        orderby a.AbsentFrom
-                        select a).ToList();
-          }
-          foreach (var item in absences)
-          {
-            <tr>
-              <td>@item.AbsentFrom</td>
-              <td>@item.AbsentTo</td>
-              <td>@item.Reason</td>
-              <td>
-                <label>
-                  @if (item.Approved)
-                  {
-                    <input type="checkbox" class="filled-in" checked disabled />
-                  } else
-                  {
-                    <input type="checkbox" class="filled-in" disabled />
-                  }
-                  <span></span>
-                </label>
-              </td>
-              <td>
-                <button type="button" class="btn-small" onclick="absenceEdit('@item.ID')">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button type="button" class="btn-small" onclick="absenceDelete('@item.ID')">
-                  <i class="material-icons">delete</i>
-                </button>
-              </td>
-            </tr>
-          }
-        }
+        <!-- JS replaces this tbody -->
       </tbody>
     </table>
   </div>
@@ -106,39 +74,7 @@
         </tr>
       </thead>
       <tbody style="--height: 15vh">
-        @{
-          List<dynamic> overtimes;
-          using (var db = new DatabaseContext())
-          {
-            overtimes = (from o in db.Overtime
-                         join od in db.OvertimeDetail on o.IdOvertimeDetail equals od.ID
-                         where (o.IdUser == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)) && ((o.CreatedOn - DateTime.Now).TotalDays < 30)
-                         orderby o.Date
-                         select new
-                         {
-                           o,
-                           od
-                         }
-                         ).ToList<dynamic>();
-          }
-          foreach (var item in overtimes)
-          {
-            <tr>
-              <td>@item.o.Date</td>
-              <td>@item.o.Customer</td>
-              <td>@item.o.Hours</td>
-              <td>@item.od.Rate</td>
-              <td>
-                <button type="button" class="btn-small" onclick="overtimeEdit('@item.o.ID')">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button type="button" class="btn-small" onclick="overtimeDelete('@item.o.ID')">
-                  <i class="material-icons">delete</i>
-                </button>
-              </td>
-            </tr>
-          }
-        }
+        <!-- JS replaces this tbody -->
       </tbody>
     </table>
   </div>

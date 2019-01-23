@@ -1,14 +1,20 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace TimeManager {
-  public class Program {
-    public static void Main(string[] args) {
-      CreateWebHostBuilder(args).Build().Run();
+namespace TimeManager
+{
+  public class Program
+  {
+    public static void Main(string[] args)
+    {
+      var host = CreateWebHostBuilder(args).Build();
+
+      host.Run();
     }
 
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+      return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+    }
   }
 }
