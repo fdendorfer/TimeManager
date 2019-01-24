@@ -44,6 +44,7 @@ namespace TimeManager.Pages
                     select a).ToList();
         if (last30days == "true")
           absences = absences.Where(a => (DateTime.Now - a.CreatedOn).TotalDays < 30).ToList();
+
         result[0] = absences;
 
         overtimes = (from o in db.Overtime
@@ -53,6 +54,7 @@ namespace TimeManager.Pages
                      select new { o, od }).ToList<dynamic>();
         if (last30days == "true")
           overtimes = overtimes.Where(d => (DateTime.Now - d.o.CreatedOn).TotalDays < 30).ToList();
+
         result[1] = overtimes;
       }
 

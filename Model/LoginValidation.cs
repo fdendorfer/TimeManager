@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace TimeManager.Model {
-  public class LoginValidation : IdentityUser {
+namespace TimeManager.Model
+{
+  public class LoginValidation : IdentityUser
+  {
     [PersonalData]
     [Required(ErrorMessage = "Benutzername muss ausgefüllt werden")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Der Benutzername muss zwischen 2 und 100 Zeichen lang sein")]

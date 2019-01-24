@@ -50,15 +50,15 @@
 
 
       <div><span>Grund:</span></div>
-        <!-- nested Grid -->
+      <!-- nested Grid -->
       <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
         @foreach (var item in Model.reasons)
-          {
-            <label>
-              <input type="radio" asp-for="Absence.Reason" value="@item" />
-              <span>@item</span>
-            </label>
-          }
+        {
+          <label>
+            <input type="radio" asp-for="Absence.Reason" value="@item" />
+            <span>@item</span>
+          </label>
+        }
         <label>
           <input type="radio" asp-for="Absence.Reason" value="Anderer" />
           <span><input type="text" placeholder="Anderer" asp-for="Absence.OtherReason" /></span>
@@ -66,7 +66,7 @@
         <span class="red-text" asp-validation-for="Absence.Reason"></span>
         <span class="red-text" asp-validation-for="Absence.OtherReason"></span>
       </div>
-      
+
       <div><span>Ist i.O.:</span></div>
       <div>
         <!-- label wrapper and empty span is required for materialize -->
@@ -81,7 +81,7 @@
           <span></span>
         </label>
       </div>
-      
+
       <input type="hidden" asp-for="Absence.ID" />
     </form>
   </div>

@@ -27,7 +27,7 @@ body {
   background: #333333;
   border-radius: 2em;
   padding: 2em;
-  margin: 5vw auto 0 auto;
+  margin: 2em auto 0 auto;
 }
 
 body > footer {
@@ -41,6 +41,10 @@ body > footer {
   left: 5vw;
 }
 
+.table-container table {
+  width: 100%;
+}
+
 .table-container tbody{
   display: block;
   height: var(--height);
@@ -50,14 +54,6 @@ body > footer {
   display: table;
   width: 100%;
   table-layout: fixed;
-}
-
-.table-container thead {
-  width: calc(100% - 1em);
-}
-
-.table-container table {
-  width: 100%;
 }
 
 .modal.modal-fixed-footer .modal-footer {
@@ -75,4 +71,8 @@ nav, nav ul a, nav * {
 
 .datepicker-modal {
   max-width: fit-content !important;
+}
+
+.datepicker-modal .datepicker-date-display {
+  display: none;
 }

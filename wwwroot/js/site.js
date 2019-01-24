@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', function (e) {
+﻿$(document).ready(() => {
   materializeStuff();
 });
 
@@ -6,20 +6,16 @@ function materializeStuff() {
   // Element Lists, which should not be auto initialized, because they need options
   let modalList = document.querySelectorAll('#absenceWindow, #overtimeWindow, #userWindow');
   $(modalList).addClass('no-autoinit');
-  let datePickerList = document.querySelectorAll(
-    '#absenceWindow #dateFrom, #absenceWindow #dateTo, #overtimeWindow #date'
-  );
+  let datePickerList = document.querySelectorAll('#absenceWindow #dateFrom, #absenceWindow #dateTo, #overtimeWindow #date');
   $(datePickerList).addClass('no-autoinit');
-  let timePickerList = document.querySelectorAll(
-    '#absenceWindow #timeFrom, #absenceWindow #timeTo'
-  );
+  let timePickerList = document.querySelectorAll('#absenceWindow #timeFrom, #absenceWindow #timeTo');
   $(timePickerList).addClass('no-autoinit');
 
   // Build Materialize modals
   materializeBuilder(M.Modal, modalList, {
+    // Clear text fields and error messages, when modal gets closed
     onCloseStart: elem => {
       elem.querySelector('form').reset();
-      M.updateTextFields();
       document.querySelectorAll('.field-validation-error').forEach(elem => {
         elem.innerHTML = '';
       });
@@ -27,10 +23,15 @@ function materializeStuff() {
   });
   // Build Materialize datepickers
   materializeBuilder(M.Datepicker, datePickerList, {
+    // Displayformat
     format: 'dd.mm.yyyy',
+    // Start der Woche, 0 = Sunday
     firstDay: 1,
+    // Fills the already displayed weeks with days from previous and next months
     showDaysInNextAndPreviousMonths: true,
+    // Parent element
     container: 'body',
+    // Language options, i18n = internationalization
     i18n: {
       cancel: 'Abbrechen',
       done: 'Ok',
@@ -96,34 +97,35 @@ function materializeBuilder(component, elements, options) {
   });
 }
 
-// This prevents the form from submitting normally, because it would reload the whole page, even when there were errors on the page. Like this only the error fields get switched
-$('#absenceForm, #overtimeForm, #userForm').on('submit', function (e) {
+// This prevents the forms from submitting normally, because it would reload the whole page, even when there were errors on the page
+$('#absenceForm, #overtimeForm, #userForm').on('submit', e => {
   e.preventDefault();
   $.ajax({
-    url: $(this).attr('action') || window.location.pathname,
+    url: '/OwnTimes',
     type: 'POST',
     data: $(e.target).serialize(),
-    success: function (data, textStatus, jqXHR) {
+    success: (data, textStatus, jqXHR) => {
+      // If ModelState is valid then a the specified HTTP state 202 is returned
       if (jqXHR.status === 202)
         location.reload();
 
       let errorSpansOld = $('.red-text');
       let errorSpansNew = $(data).find('.red-text');
+      // Replace all the old error spans with the new content
       for (var i = 0; i < errorSpansNew.length; i++) {
         errorSpansOld[i].outerHTML = errorSpansNew[i].outerHTML;
       }
     },
-    error: function (jXHR, textStatus, errorThrown) {
+    error: () => {
       alert('Fehler bei der Verarbeitung des Formulars. Überprüfen sie, ob ihre Aktion durchgeführt wurde und versuchen Sie es allenfalls erneut.');
       location.reload();
     }
   });
 });
 
-
 // * OwnTimes
 // Checkbox and Select listener to filter tables
-$('#OwnTimes #filter, #OwnTimes select').change(function () {
+$('#OwnTimes #filter, #OwnTimes select').change(function (e) {
   let last30days = $('#OwnTimes #filter').prop('checked');
   let selectedUser = $('#OwnTimes select').val();
   writeOwnTimesTables(last30days, selectedUser);
@@ -141,7 +143,7 @@ function writeOwnTimesTables(last30days, selectedUser) {
       let absenceTable = document.querySelectorAll('#OwnTimes tbody')[0];
       let overtimeTable = document.querySelectorAll('#OwnTimes tbody')[1];
       // Fill first table with data from json
-      data[0].forEach(function (e) {
+      data[0].forEach(e => {
         // New row
         let row = absenceTable.insertRow(absenceTable.rows.length);
         let i = 0;
@@ -165,7 +167,7 @@ function writeOwnTimesTables(last30days, selectedUser) {
       });
 
       // Fill second table with data from json
-      data[1].forEach(function (e) {
+      data[1].forEach(e => {
         // New row
         let row = overtimeTable.insertRow(overtimeTable.rows.length);
         let i = 0;
@@ -191,9 +193,12 @@ function writeOwnTimesTables(last30days, selectedUser) {
 function absenceEdit(id) {
   $.ajax({
     url: '/OwnTimes?handler=Absence&id=' + id,
-    success: function (data) {
+    success: data => {
+      // Array of all input fields in absenceWindow
       let inputs = $('#absenceWindow input');
+      // Js object from JSON
       let json = $.parseJSON(data);
+      // Prefill fields with data from json
       $(inputs[0]).val(json.AbsenceDateFrom);
       $(inputs[1]).val(json.AbsenceDateTo);
       $(inputs[2]).prop('checked', json.FullDay);
@@ -221,7 +226,7 @@ function overtimeEdit(id) {
   $('#overtimeWindow').modal('open');
   $.ajax({
     url: '/OwnTimes?handler=Overtime&id=' + id,
-    success: function (data) {
+    success: data => {
       let inputs = $('#overtimeWindow input');
       let json = $.parseJSON(data);
       $(inputs[0]).val(json.Date);
@@ -240,13 +245,10 @@ function absenceDelete(id) {
   $.ajax({
     url: '/OwnTimes?handler=Absence&id=' + id,
     method: 'DELETE',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader(
-        'XSRF-TOKEN',
-        $('input:hidden[name="__RequestVerificationToken"]').val()
-      );
+    beforeSend: xhr => {
+      xhr.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
     },
-    success: function () {
+    success: () => {
       location.reload();
     }
   });
@@ -256,13 +258,10 @@ function overtimeDelete(id) {
   $.ajax({
     url: '/OwnTimes?handler=Overtime&id=' + id,
     method: 'DELETE',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader(
-        'XSRF-TOKEN',
-        $('input:hidden[name="__RequestVerificationToken"]').val()
-      );
+    beforeSend: xhr => {
+      xhr.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
     },
-    success: function () {
+    success: () => {
       location.reload();
     }
   });
@@ -271,8 +270,8 @@ function overtimeDelete(id) {
 
 // * Controlling
 // Checkbox click listener to filter table
-$('#Controlling #filter').click(function () {
-  let uncheckedOnly = $(this).prop('checked');
+$('#Controlling #filter').click(() => {
+  let uncheckedOnly = $('#Controlling #filter').prop('checked');
   writeControllingTable(uncheckedOnly);
 });
 
@@ -287,7 +286,7 @@ function writeControllingTable(uncheckedOnly) {
       // Table selector
       let table = document.querySelector('#Controlling tbody');
       // For each line in json
-      data.forEach(function (e) {
+      data.forEach(e => {
         // New row
         let row = table.insertRow(table.rows.length);
         let i = 0;
@@ -305,30 +304,24 @@ function writeControllingTable(uncheckedOnly) {
   });
 }
 
-$('#Controlling #ferienliste').click((e) => {
+$('#Controlling #ferienliste').click(() => {
   window.open('/Controlling?handler=Ferienliste', '_blank');
 });
 
-$('#Controlling #überzeitkontrolle').click((e) => {
+$('#Controlling #überzeitkontrolle').click(() => {
   window.open('/Controlling?handler=Überzeitkontrolle', '_blank');
 });
 
 // An advanced user can approve the absences in /Controlling with the checkboxes
-$('#Controlling').on('change', 'input[name="isIO"]', function (e) {
+$('#Controlling').on('change', 'input[name="isIO"]', e => {
+  let idAbsence = $(e.target).attr('data-id-absence');
   $.ajax({
-    url: $(this).attr('action') || window.location.pathname,
+    url: `/Controlling?idAbsence=${idAbsence}&value=${e.currentTarget.checked}`,
     type: 'POST',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader(
-        'XSRF-TOKEN',
-        $('input:hidden[name="__RequestVerificationToken"]').val()
-      );
+    beforeSend: xhr => {
+      xhr.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
     },
-    data: {
-      idAbsence: $(this).attr('data-id-absence'),
-      value: e.currentTarget.checked
-    },
-    success: function () {
+    success: () => {
       location.reload();
     }
   });
@@ -337,8 +330,8 @@ $('#Controlling').on('change', 'input[name="isIO"]', function (e) {
 
 // * Users
 // Checkbox click listener to filter table
-$('#Users #filter').click(function () {
-  let activeFilter = $(this).prop('checked');
+$('#Users #filter').click(() => {
+  let activeFilter = $('#Users #filter').prop('checked');
   writeUsersTable(activeFilter);
 });
 
@@ -353,7 +346,7 @@ function writeUsersTable(activeFilter) {
       // Table selector
       let table = document.querySelector('#Users tbody');
       // For each line in json
-      data.forEach(function (e) {
+      data.forEach(e => {
         // New row
         let row = table.insertRow(table.rows.length);
         let i = 0;
@@ -372,7 +365,7 @@ function writeUsersTable(activeFilter) {
         row.insertCell(++i).appendChild(buttons[0]);
       });
     },
-    error: function (XMLHttpRequest, textStatus, errorThrown) {
+    error: () => {
       alert('An error has occured');
     }
   });
@@ -382,7 +375,7 @@ function userEdit(id) {
   $('#userWindow').modal('open');
   $.ajax({
     url: '/Users?id=' + id,
-    success: function (data) {
+    success: data => {
       let inputs = $('#userWindow input');
       let json = $.parseJSON(data);
       $(inputs[0]).val(json.Username);
@@ -404,13 +397,10 @@ function userDelete(id) {
   $.ajax({
     url: '/Users?id=' + id,
     method: 'DELETE',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader(
-        'XSRF-TOKEN',
-        $('input:hidden[name="__RequestVerificationToken"]').val()
-      );
+    beforeSend: xhr => {
+      xhr.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
     },
-    success: function () {
+    success: () => {
       location.reload();
     }
   });

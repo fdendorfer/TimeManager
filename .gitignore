@@ -3,3 +3,6 @@ obj/
 .vscode/
 .vs/
 .sass-cache/
+!config.json
+*.xlsx
+*.udl

@@ -1,77 +1,53 @@
-﻿@{
-  using (var db = new DatabaseContext())
-  {
-    if (User.Identity.Name != null && ViewBag.CurrentUser == null)
-    {
-      ViewBag.CurrentUser = db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
-    }
-  }
-  bool permissionAnonym, permissionNormal, permissionAdvanced, permissionHigh;
-  permissionAnonym = permissionNormal = permissionAdvanced = permissionHigh = false;
-  if (User.Identity.Name == null)
-  {
-    permissionAnonym = true;
-  } else
-  {
-    if (User.IsInRole("Normal"))
-    {
-      permissionNormal = true;
-    }
-    if (User.IsInRole("Advanced"))
-    {
-      permissionAdvanced = permissionNormal = true;
-    }
-    if (User.IsInRole("High"))
-    {
-      permissionHigh = permissionAdvanced = permissionNormal = true;
-    }
-  }
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - TimeManager</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon.png">
+
   <!-- Materialize -->
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
   <link rel="stylesheet" href="~/css/materialize.css" />
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  <!-- Google Material Icons-->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="~/css/site.css" />
 
   <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
-
-  <script src="~/js/site.js">//asp-append-version="true"</script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Custom JS -->
+  <script src="~/js/site.js" asp-append-version="true"></script>
 </head>
 
 <body>
+  <!-- This form triggers logout functionality in Account helper -->
   <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post"></form>
   <nav>
     <div class="nav-wrapper">
       <ul class="left">
-        @if (permissionAnonym)
+        @if (User.Identity.Name == null)
         {
           <li>
             <a href="/">Index</a>
           </li>
         }
-        @if (permissionNormal)
+        @if (User.IsInRole("Normal") || User.IsInRole("Advanced") || User.IsInRole("High"))
         {
           <li>
             <a href="/OwnTimes">OwnTimes</a>
           </li>
         }
-        @if (permissionAdvanced)
+        @if (User.IsInRole("Advanced") || User.IsInRole("High"))
         {
           <li>
             <a href="/Controlling">Controlling</a>
           </li>
         }
-        @if (permissionHigh)
+        @if (User.IsInRole("High"))
         {
           <li>
             <a href="/Users">Users</a>
@@ -79,12 +55,12 @@
         }
       </ul>
       <ul class="right">
-        @if (!permissionAnonym)
+        @if (ViewBag.CurrentUser != null)
         {
           <li>
             <span>Hallo @ViewBag.CurrentUser.Username</span>
           </li>
-          <li onclick="logoutForm.submit();">
+          <li  onclick="logoutForm.submit();">
             <a>Logout</a>
           </li>
         }
@@ -98,15 +74,10 @@
   </div>
 
   <footer>
-    <div>ONAX AG - it solutions</div>
+    <span>ONAX AG - it solutions</span>
   </footer>
-
-  <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js">//integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"</script>
-  <!-- JQuery Onobtrusive Client Validation -->
-  <!-- Materialize -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-  <script src="~/js/site.js">//asp-append-version="true"</script>
+  
+  <!-- Custom JS (This script is already imported in the head, so the function calls work, but event handlers need to be defined after the elements have been created) -->
+  <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

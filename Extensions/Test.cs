@@ -4,6 +4,7 @@ using NPOI.XSSF.UserModel;
 
 namespace TimeManager.Extensions
 {
+  // This is only for testing the styling with npoi
   public class Test
   {
     public static async Task Do()

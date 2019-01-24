@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using TimeManager.Database;
 using TimeManager.Extensions;
 using TimeManager.Model;
@@ -48,7 +47,7 @@ namespace TimeManager.Pages
       }
     }
 
-    public IActionResult OnPost(string idAbsence, bool value)
+    public IActionResult OnPost([FromQuery]string idAbsence, [FromQuery]bool value)
     {
       using (var db = new DatabaseContext())
       {

@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TimeManager.Database;
+using Microsoft.Extensions.Options;
 
 namespace TimeManager
 {
@@ -66,7 +65,6 @@ namespace TimeManager
         app.UseExceptionHandler("/Shared/Error");
         app.UseHsts();  // Forces HTTPS
       }
-      app.UseDeveloperExceptionPage();
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();

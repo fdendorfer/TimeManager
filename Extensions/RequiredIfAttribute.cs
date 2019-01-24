@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Hosting;
 
 namespace TimeManager.Extensions
 {
@@ -13,18 +12,20 @@ namespace TimeManager.Extensions
       dateDiffPositive,
     }
     public string relatedProperty;
-    public Result relatedPropertyValue;
+    public Result propertyRelation;
     public string matchingString;
     public new string ErrorMessage;
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
+      // Gets the value of the related property
       var prop = validationContext.ObjectInstance.GetType().GetProperty(this.relatedProperty).GetValue(validationContext.ObjectInstance, null);
 
+      // Check if related property was defined
       if (relatedProperty == null)
         throw new System.Exception("Please set relatedProperty to the name of the dependent property as string.");
 
-      switch (relatedPropertyValue)
+      switch (propertyRelation)
       {
         case Result.mustBeTrue:
           if ((bool)prop == true || !string.IsNullOrEmpty((string)value))
@@ -51,7 +52,7 @@ namespace TimeManager.Extensions
             return new ValidationResult(ErrorMessage);
           else
             return ValidationResult.Success;
-          
+
       }
       return ValidationResult.Success;
     }
