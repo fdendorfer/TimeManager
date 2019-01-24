@@ -55,10 +55,10 @@
         }
       </ul>
       <ul class="right">
-        @if (ViewBag.CurrentUser != null)
+        @if (User.Identity.Name != null)
         {
           <li>
-            <span>Hallo @ViewBag.CurrentUser.Username</span>
+            <span>Hallo @User.Identity.Name</span>
           </li>
           <li  onclick="logoutForm.submit();">
             <a>Logout</a>

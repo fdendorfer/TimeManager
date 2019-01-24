@@ -17,13 +17,18 @@ namespace TimeManager.Pages
   public class UsersPageModel : PageModel
   {
     // Local variables
+    public readonly DatabaseContext _db;
     public List<SelectListItem> departments = new List<SelectListItem>();
     public List<SelectListItem> permissions;
     public List<UserModel> Users;
-
     // Field used for validation
     [BindProperty]
     public UserValidation ValUser { get; set; } = new UserValidation();
+
+    public UsersPageModel(DatabaseContext db)
+    {
+      _db = db;
+    }
 
     // Set id for single user and onlyActive json of all users
     public IActionResult OnGet([FromQuery] string id, [FromQuery] string onlyActive)
@@ -33,36 +38,30 @@ namespace TimeManager.Pages
 
       if (onlyActive != null)
       {
-        using (var db = new DatabaseContext())
-        {
-          Users = (from u in db.User
-                   select u).ToList();
-          if (onlyActive == "true")
-            Users = Users.Where(u => u.Deactivated == false).ToList();
+        Users = (from u in _db.User
+                 select u).ToList();
+        if (onlyActive == "true")
+          Users = Users.Where(u => u.Deactivated == false).ToList();
 
-          return new JsonResult(Users);
-        }
+        return new JsonResult(Users);
       }
 
-      using (var db = new DatabaseContext())
-      {
-        Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
-        var user = (from u in db.User
-                    where u.ID == new Guid(id)
-                    select u).Single();
+      Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
+      var user = (from u in _db.User
+                  where u.ID == new Guid(id)
+                  select u).Single();
 
-        // Fillin the userPartial with existing values
-        ValUser.ID = user.ID.ToString();
-        ValUser.IdPermission = user.IdPermission.ToString();
-        ValUser.Username = user.Username;
-        ValUser.Firstname = user.Firstname;
-        ValUser.Lastname = user.Lastname;
-        ValUser.Department = user.Department;
-        ValUser.Holidays = user.Holidays.ToString();
-        ValUser.Deactivated = user.Deactivated;
+      // Fillin the userPartial with existing values
+      ValUser.ID = user.ID.ToString();
+      ValUser.IdPermission = user.IdPermission.ToString();
+      ValUser.Username = user.Username;
+      ValUser.Firstname = user.Firstname;
+      ValUser.Lastname = user.Lastname;
+      ValUser.Department = user.Department;
+      ValUser.Holidays = user.Holidays.ToString();
+      ValUser.Deactivated = user.Deactivated;
 
-        return new JsonResult(JsonConvert.SerializeObject(ValUser));
-      }
+      return new JsonResult(JsonConvert.SerializeObject(ValUser));
     }
 
     // New or update user
@@ -72,39 +71,37 @@ namespace TimeManager.Pages
 
       if (isValid)
       {
-        using (var db = new DatabaseContext())
+        var user = new UserModel()
         {
-          var user = new UserModel()
-          {
-            ID = ValUser.ID == null ? Guid.NewGuid() : new Guid(ValUser.ID),
-            IdPermission = new Guid(ValUser.IdPermission),
-            Firstname = ValUser.Firstname,
-            Lastname = ValUser.Lastname,
-            Username = ValUser.Username,
-            Department = ValUser.Department,
-            Holidays = Convert.ToDecimal(ValUser.Holidays),
-            Deactivated = ValUser.Deactivated
-          };
-          var testUser = db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
-          if (ValUser.Password == null && testUser != null)
-          {
-            user.Password = testUser.Password;
-          } else
-          {
-            user.PasswordValue = ValUser.Password;
-          }
-
-          var record = db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
-          if (record == null)
-          {
-            db.User.Add(user);
-          } else
-          {
-            record = user;
-            db.Update(record);
-          }
-          db.SaveChanges();
+          ID = ValUser.ID == null ? Guid.NewGuid() : new Guid(ValUser.ID),
+          IdPermission = new Guid(ValUser.IdPermission),
+          Firstname = ValUser.Firstname,
+          Lastname = ValUser.Lastname,
+          Username = ValUser.Username,
+          Department = ValUser.Department,
+          Holidays = Convert.ToDecimal(ValUser.Holidays),
+          Deactivated = ValUser.Deactivated
+        };
+        var testUser = _db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
+        if (ValUser.Password == null && testUser != null)
+        {
+          user.Password = testUser.Password;
+        } else
+        {
+          user.PasswordValue = ValUser.Password;
         }
+
+        var record = _db.User.AsNoTracking().SingleOrDefault(u => u.ID == user.ID);
+        if (record == null)
+        {
+          _db.User.Add(user);
+        } else
+        {
+          record = user;
+          _db.Update(record);
+        }
+        _db.SaveChanges();
+
         return StatusCode(202); // HTTP 202 ACCEPTED
       }
 
@@ -121,11 +118,8 @@ namespace TimeManager.Pages
     // Deactivate User
     public void OnDelete([FromQuery] string id)
     {
-      using (var db = new DatabaseContext())
-      {
-        db.User.Find(new Guid(id)).Deactivated = true;
-        db.SaveChanges();
-      }
+      _db.User.Find(new Guid(id)).Deactivated = true;
+      _db.SaveChanges();
     }
   }
 }

@@ -1,9 +1,6 @@
 ﻿@model OwnTimesPageModel
 @{
-  using (var db = new DatabaseContext())
-  {
-    Model.reasons = db.AbsenceDetail.Select(item => item.Reason).ToArray();
-  }
+  Model.reasons = Model._db.AbsenceDetail.Select(item => item.Reason).ToArray();
 }
 
 <div id="absenceWindow" class="modal modal-fixed-footer">

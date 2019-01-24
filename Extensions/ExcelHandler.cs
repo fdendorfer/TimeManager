@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -14,13 +15,12 @@ namespace TimeManager.Extensions
 {
   public class ExcelHandler
   {
-    public static async Task CreateFerienliste(string department)
+    public static async Task CreateFerienliste(string department, DatabaseContext db)
     {
       await Task.Run(() =>
       {
         // Path where file will be stored
         var templatePath = @"Ferienliste_template.xlsx";
-        using (var db = new DatabaseContext())
         using (var outFile = new FileStream(templatePath.Replace("template", department), FileMode.Create, FileAccess.ReadWrite))
         {
           // Workbook
@@ -190,12 +190,11 @@ namespace TimeManager.Extensions
       });
     }
 
-    public static async Task CreateÜberzeitkontrolle(string department)
+    public static async Task CreateÜberzeitkontrolle(string department, DatabaseContext db)
     {
       await Task.Run(() =>
       {
         var templatePath = @"Überzeitkontrolle_template.xlsx";
-        using (var db = new DatabaseContext())
         using (var outFile = new FileStream(templatePath.Replace("template", department), FileMode.Create, FileAccess.ReadWrite))
         {
           // Workbook

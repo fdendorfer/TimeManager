@@ -12,10 +12,8 @@ namespace TimeManager.Database
     public DbSet<PermissionModel> Permission { get; set; }
     public DbSet<UserModel> User { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
     {
-      optionsBuilder.EnableSensitiveDataLogging(true);
-      optionsBuilder.UseSqlServer("Server=localhost;Database=TimeManager;User Id=WebAdmin;Password=DunEWWFL28AEtI");
     }
   }
 }
