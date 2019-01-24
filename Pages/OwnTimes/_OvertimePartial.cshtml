@@ -1,13 +1,10 @@
 @model OwnTimesPageModel
 @{
-  using (var db = new DatabaseContext())
+  Model.rates = Model._db.OvertimeDetail.Select(item => new SelectListItem
   {
-    Model.rates = db.OvertimeDetail.Select(item => new SelectListItem
-    {
-      Text = item.Description,
-      Value = item.ID.ToString()
-    }).ToList();
-  }
+    Text = item.Description,
+    Value = item.ID.ToString()
+  }).ToList();
 }
 
 <div id="overtimeWindow" class="modal modal-fixed-footer">

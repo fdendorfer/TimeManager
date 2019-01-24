@@ -1,17 +1,14 @@
 ﻿@model UsersPageModel
 @{
-  using (var db = new DatabaseContext())
-  {
-    // Fill both select dropdowns
-    Model.departments.Add(new SelectListItem("Software", "Software"));
-    Model.departments.Add(new SelectListItem("Technik", "Technik"));
+  // Fill both select dropdowns
+  Model.departments.Add(new SelectListItem("Software", "Software"));
+  Model.departments.Add(new SelectListItem("Technik", "Technik"));
 
-    Model.permissions = db.Permission.Select(item => new SelectListItem
-    {
-      Text = item.Description,
-      Value = item.ID.ToString()
-    }).ToList();
-  }
+  Model.permissions = Model._db.Permission.Select(item => new SelectListItem
+  {
+    Text = item.Description,
+    Value = item.ID.ToString()
+  }).ToList();
 }
 
 <div id="userWindow" class="modal modal-fixed-footer">

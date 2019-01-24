@@ -1,12 +1,3 @@
 ﻿@{
   Layout = "_Layout";
-  using (var db = new DatabaseContext())
-  {
-    // Check if user is logged in
-    if (User.Identity.Name != null && ViewBag.CurrentUser == null)
-    {
-      // Store logged in user as UserModel object in ViewBag for easier access
-      ViewBag.CurrentUser = db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
-    }
-  }
 }

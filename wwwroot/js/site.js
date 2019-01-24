@@ -101,7 +101,7 @@ function materializeBuilder(component, elements, options) {
 $('#absenceForm, #overtimeForm, #userForm').on('submit', e => {
   e.preventDefault();
   $.ajax({
-    url: '/OwnTimes',
+    url: $(e.target).attr('action'), // This gets the full called url with the handler
     type: 'POST',
     data: $(e.target).serialize(),
     success: (data, textStatus, jqXHR) => {

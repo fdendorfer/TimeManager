@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using TimeManager.Database;
 
 namespace TimeManager
 {
@@ -52,6 +53,13 @@ namespace TimeManager
         options.AddPolicy("PermissionAdvanced", policy => policy.RequireRole("Advanced", "High"));
         options.AddPolicy("PermissionHigh", policy => policy.RequireRole("High"));
       });
+
+      services.AddDbContext<DatabaseContext>(options =>
+      {
+        options.UseSqlServer(ConfigurationBinder.GetValue<string>(Configuration, "ConnectionString"));
+        options.EnableSensitiveDataLogging(true);
+      });
+
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

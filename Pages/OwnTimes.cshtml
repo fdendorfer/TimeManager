@@ -14,18 +14,14 @@
     {
       <select id="userDropdown" class="right browser-default btn" style="width: fit-content;">
         @{
-          using (var db = new DatabaseContext())
+          foreach (var item in Model.userList)
           {
-            var userList = (from u in db.User select u).ToList();
-            foreach (var item in userList)
+            if (item.ID.ToString() == @User.FindFirst(ClaimTypes.NameIdentifier).Value)
             {
-              if (item.ID.ToString() == @User.FindFirst(ClaimTypes.NameIdentifier).Value)
-              {
-                <option selected value="@item.ID">@item.Username</option>
-              } else
-              {
-                <option value="@item.ID">@item.Username</option>
-              }
+              <option selected value="@item.ID">@item.Username</option>
+            } else
+            {
+              <option value="@item.ID">@item.Username</option>
             }
           }
         }
