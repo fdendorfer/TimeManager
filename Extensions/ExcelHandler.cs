@@ -20,7 +20,7 @@ namespace TimeManager.Extensions
       await Task.Run(() =>
       {
         // Path where file will be stored
-        var templatePath = @"Ferienliste_template.xlsx";
+        var templatePath = @"C:\temp\Ferienliste_template.xlsx";
         using (var outFile = new FileStream(templatePath.Replace("template", department), FileMode.Create, FileAccess.ReadWrite))
         {
           // Workbook
@@ -194,7 +194,7 @@ namespace TimeManager.Extensions
     {
       await Task.Run(() =>
       {
-        var templatePath = @"Überzeitkontrolle_template.xlsx";
+        var templatePath = @"C:\temp\Überzeitkontrolle_template.xlsx";
         using (var outFile = new FileStream(templatePath.Replace("template", department), FileMode.Create, FileAccess.ReadWrite))
         {
           // Workbook

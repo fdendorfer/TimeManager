@@ -64,20 +64,20 @@ namespace TimeManager.Pages
     {
       UserModel user = _db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
 
-      var filename = "Ferienliste_" + user.Department + ".xlsx";
+      var filename = @"Ferienliste_" + user.Department + ".xlsx";
 
       await ExcelHandler.CreateFerienliste(user.Department, _db);
-      return File(System.IO.File.ReadAllBytes(filename), "application/vnd.ms-excel", filename);
+      return File(System.IO.File.ReadAllBytes(@"C:\temp\" + filename), "application/vnd.ms-excel", filename);
     }
 
     public async Task<IActionResult> OnGet‹berzeitkontrolleAsync()
     {
       UserModel user = _db.User.Where(u => u.ID == new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value)).FirstOrDefault();
 
-      var filename = "‹berzeitkontrolle_" + user.Department + ".xlsx";
+      var filename = @"‹berzeitkontrolle_" + user.Department + ".xlsx";
 
       await ExcelHandler.Create‹berzeitkontrolle(user.Department, _db);
-      return File(System.IO.File.ReadAllBytes(filename), "application/vnd.ms-excel", filename);
+      return File(System.IO.File.ReadAllBytes(@"C:\temp\" + filename), "application/vnd.ms-excel", filename);
     }
   }
 }
