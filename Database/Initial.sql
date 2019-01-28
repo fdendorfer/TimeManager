@@ -90,10 +90,10 @@ INSERT INTO [Permission] ([Level], [Description], [DescriptionLong])
 GO
 
 -- **************************************************
-INSERT INTO [USER] ([IdPermission], [Firstname], [Lastname], [Username], [Password], [Department], [Holidays], [Deactivated])
-	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Software', 25, 0),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Software', 25, 0),
-	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', CONVERT(VARCHAR(32), HashBytes('MD5', '123'), 1), 'Technik', 25, 0)
+INSERT INTO [User] ([IdPermission], [Firstname], [Lastname], [Username], [Password], [Department], [Holidays], [Deactivated])
+	VALUES ((SELECT [ID] FROM [Permission] WHERE [Level] = 1), 'Florian', 'Dendorfer', 'fdendorfer', HashBytes('MD5', '123'), 'Software', 25, 0),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 2), 'Roman', 'Bleisch', 'rbleisch', HashBytes('MD5', '123'), 'Software', 25, 0),
+	((SELECT [ID] FROM [Permission] WHERE [Level] = 3), 'Marco', 'Andreoli', 'mandreoli', HashBytes('MD5', '123'), 'Technik', 25, 0)
 GO
 
 -- **************************************************

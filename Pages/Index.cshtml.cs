@@ -55,8 +55,7 @@ namespace TimeManager.Pages
           // Cookie specific properties
           var authProperties = new AuthenticationProperties { };
           // Creates cookie (and redirects to OwnTimes)
-          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties); // To log out await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                                                                                                                                                 // Redirects to OwnTimes, if SignInAsync doesn't do it
+          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties); 
           return RedirectToPage("/OwnTimes");
         } else
         {

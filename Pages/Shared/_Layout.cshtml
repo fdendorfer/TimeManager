@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - TimeManager</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon.png" />
 
   <!-- Materialize -->
   <link rel="stylesheet" href="~/css/materialize.css" />
@@ -60,7 +60,7 @@
           <li>
             <span>Hallo @User.Identity.Name</span>
           </li>
-          <li  onclick="logoutForm.submit();">
+          <li onclick="logoutForm.submit();">
             <a>Logout</a>
           </li>
         }
@@ -76,7 +76,7 @@
   <footer>
     <span>ONAX AG - it solutions</span>
   </footer>
-  
+
   <!-- Custom JS (This script is already imported in the head, so the function calls work, but event handlers need to be defined after the elements have been created) -->
   <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
