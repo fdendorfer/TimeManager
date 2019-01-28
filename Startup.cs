@@ -12,12 +12,13 @@ namespace TimeManager
 {
   public class Startup
   {
+
+    public IConfiguration Configuration { get; }
+
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -35,6 +36,7 @@ namespace TimeManager
           options.Conventions.AuthorizePage("/Users", "PermissionHigh");
         }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+      // Cross-site request blocking
       services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
       // Cookie Authentication
@@ -54,6 +56,7 @@ namespace TimeManager
         options.AddPolicy("PermissionHigh", policy => policy.RequireRole("High"));
       });
 
+      // Database service
       services.AddDbContext<DatabaseContext>(options =>
       {
         options.UseSqlServer(ConfigurationBinder.GetValue<string>(Configuration, "ConnectionString"));
