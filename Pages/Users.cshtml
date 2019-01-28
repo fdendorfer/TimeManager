@@ -1,0 +1,41 @@
+﻿@page
+@model UsersPageModel
+@{ ViewData["Title"] = "Benutzer"; }
+<script>
+  writeUsersTable('true');
+</script>
+<div id="Users">
+  <h1>Benutzerverwaltung</h1>
+
+  <a class="btn modal-trigger" href="#userWindow">Neuer Benutzer</a>
+
+  <!-- UserWindow -->
+  <partial name="/Pages/Users/_UserPartial.cshtml" />
+
+  <div>
+    <br />
+    <h4 style="display: contents;">Benutzer</h4>
+    <label class="right">
+      <input id="filter" class="filled-in" type="checkbox" checked />
+      <span>Filter aktive Benutzer</span>
+    </label>
+  </div>
+
+  <!-- UsersGrid -->
+  <div class="table-container responsive-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Benutzername</th>
+          <th>Vorname</th>
+          <th>Nachname</th>
+          <th>Abteilung</th>
+          <th>Bearbeiten</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JS replaces this tbody -->
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -4,4 +4,5 @@ obj/
 .vs/
 .sass-cache/
 config.json
-Ferienliste_Software.xlsx
+*.xlsx
+*.udl

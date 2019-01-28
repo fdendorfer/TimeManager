@@ -1,89 +1,77 @@
 ﻿@page
-
-@model OwnTimesModel
+@model OwnTimesPageModel
 @{ ViewData["Title"] = "Eigene Zeiten"; }
+<script>
+  writeOwnTimesTables('true', '@User.FindFirst(ClaimTypes.NameIdentifier).Value');
+</script>
+<div id="OwnTimes">
+  <h1>Eigene Zeiten</h1>
 
-<h1>Eigene Zeiten</h1>
-
-<a class="btn green modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
-<a class="btn green modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
-
-<!-- AbsenceWindow -->
-<div id="absenceWindow" class="modal modal-fixed-footer" style="height: 600px">
-  <div class="modal-content">
-    <h4>Neue Abwesenheit</h4>
-    <div id="absenceForm" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
-      <div><span>Abwesend von:</span></div>
-      <div><input id="dateFrom" type="text" class="datepicker" /></div>
-      <div><span>Abwesend bis:</span></div>
-      <div><input id="dateTo" type="text" class="datepicker" /></div>
-      <div><span>Grund:</span></div>
-      <div>
-        <!-- nested Grid -->
-        <div id="reasonGrid"
-             style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Ferien</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Militär</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Krank</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Unfall</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span>Schule</span>
-          </label>
-          <label>
-            <input type="checkbox" class="filled-in green reasonCheck" />
-            <span><input id="reasonText" type="text" placeholder="Anderer" /></span>
-          </label>
-        </div>
-      </div>
-      <div><span>Ist i.O.:</span></div>
-      <div>
-        <!-- label wrapper and empty span is required for materialize -->
-        <label>
-          <input id="approved" type="checkbox" class="filled-in green" checked disabled />
-          <span></span>
-        </label>
-      </div>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn-small">OK</button>
-    <button class="btn-small">Abbrechen</button>
-  </div>
-</div>
-
-<!-- OvertimeWindow -->
-<div id="overtimeWindow" class="modal modal-fixed-footer" style="height: 600px">
-  <div class="modal-content">
-    <h4>Neue Überzeit</h4>
-    <label for="date">Datum:</label>
-    <input id="date" type="text" class="datepicker" />
-    <label for="customer">Kunde:</label>
-    <input id="customer" type="text" />
-    <label for="addition">Zuschlag:</label>
-      <select id="addition">
-        @foreach (var line in OwnTimesModel.OvertimeDetail) {
-          <option>@line</option>
+  <a class="btn modal-trigger" href="#absenceWindow">Neue Abwesenheit</a>
+  <a class="btn modal-trigger" href="#overtimeWindow">Neue Überzeit</a>
+  @{
+    if (User.IsInRole("Advanced") || User.IsInRole("High"))
+    {
+      <select id="userDropdown" class="right browser-default btn" style="width: fit-content;">
+        @{
+          foreach (var item in Model.userList)
+          {
+            if (item.ID.ToString() == @User.FindFirst(ClaimTypes.NameIdentifier).Value)
+            {
+              <option selected value="@item.ID">@item.Username</option>
+            } else
+            {
+              <option value="@item.ID">@item.Username</option>
+            }
+          }
         }
       </select>
+    }
+  }
+  <label class="right">
+    <input id="filter" type="checkbox" class="filled-in" checked />
+    <span style="padding-right: 1em;">Letze 30 Tage</span>
+  </label>
+
+  <!-- AbsenceWindow -->
+  <partial name="/Pages/OwnTimes/_AbsencePartial.cshtml" />
+  <!-- OvertimeWindow -->
+  <partial name="/Pages/OwnTimes/_OvertimePartial.cshtml" />
+
+  <!-- AbsenceGrid -->
+  <h4>Abwesenheiten</h4>
+  <div class="table-container responsive-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Von</th>
+          <th>Bis</th>
+          <th>Grund</th>
+          <th>Ist I.O.</th>
+          <th>Bearbeiten</th>
+        </tr>
+      </thead>
+      <tbody style="--height: 15vh">
+        <!-- JS replaces this tbody -->
+      </tbody>
+    </table>
   </div>
-  <div class="modal-footer">
-    <button class="btn-small">OK</button>
-    <button class="btn-small">Abbrechen</button>
+  <!-- OvertimeGrid -->
+  <h4>Überzeiten</h4>
+  <div class="table-container responsive-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Kunde</th>
+          <th>Std.</th>
+          <th>Zuschlag</th>
+          <th>Bearbeiten</th>
+        </tr>
+      </thead>
+      <tbody style="--height: 15vh">
+        <!-- JS replaces this tbody -->
+      </tbody>
+    </table>
   </div>
 </div>
-
-<!-- AbsenceGrid -->
-<!-- OvertimeGrid -->
