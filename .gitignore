@@ -3,3 +3,5 @@ obj/
 .vscode/
 .vs/
 .sass-cache/
+config.json
+Ferienliste_Software.xlsx
