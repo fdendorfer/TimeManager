@@ -1,0 +1,44 @@
+@page
+@using System.Linq
+@model ControllingPageModel
+@{ ViewData["Title"] = "Controlling"; }
+@{
+  UserModel user = (UserModel)ViewData["CurrentUser"];
+}
+<script>
+  writeControllingTable('true');
+</script>
+
+<div id="Controlling">
+  <h1>Controlling</h1>
+
+  <a id="ferienliste" class="btn">Ferienliste</a>
+  <a id="überzeitkontrolle" class="btn">Überzeitkontrolle</a>
+
+  <div>
+    <br />
+    <h4 style="display: contents;">Abwesenheiten</h4>
+    <label class="right">
+      <input id="filter" class="filled-in" type="checkbox" checked />
+      <span>Nur ungeprüfte</span>
+    </label>
+  </div>
+
+  <!-- Absence grid -->
+  <div class="table-container responsive-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Von</th>
+          <th>Bis</th>
+          <th>Grund</th>
+          <th>Ist I.O.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JS replaces this tbody -->
+      </tbody>
+    </table>
+  </div>
+</div>

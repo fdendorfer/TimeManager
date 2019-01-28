@@ -1,76 +1,83 @@
-﻿@using Microsoft.AspNetCore.Mvc.RazorPages;
-@{
-  bool menuAno, menuNormal, menuAdvanced, menuHigh;
-  menuAno = menuNormal = menuAdvanced = menuHigh = false;
-
-  if (User.Identity.Name == null) {
-    menuAno = true;
-  } else {
-    if (User.IsInRole("Normal")) {
-      menuNormal = true;
-    }
-    if (User.IsInRole("Advanced")) {
-      menuAdvanced = menuNormal = true;
-    }
-    if (User.IsInRole("High")) {
-      menuHigh = menuAdvanced = menuNormal = true;
-    }
-  }
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - TimeManager</title>
-  <!-- Materialize -->
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
-  <link rel="stylesheet" href="css/materialize.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon.png" />
 
+  <!-- Materialize -->
+  <link rel="stylesheet" href="~/css/materialize.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  <!-- Google Material Icons-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="~/css/site.css" />
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Custom JS -->
+  <script src="~/js/site.js" asp-append-version="true"></script>
 </head>
 
 <body>
+  <!-- This form triggers logout functionality in Account helper -->
+  <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post"></form>
   <nav>
     <div class="nav-wrapper">
       <ul class="left">
-        @if (User.Identity.Name == null) {
-          <li><a href="/">Index</a></li>
+        @if (User.Identity.Name == null)
+        {
+          <li>
+            <a href="/">Index</a>
+          </li>
         }
-        @if (menuNormal) {
-          <li><a href="/OwnTimes">OwnTimes</a></li>
+        @if (User.IsInRole("Normal") || User.IsInRole("Advanced") || User.IsInRole("High"))
+        {
+          <li>
+            <a href="/OwnTimes">OwnTimes</a>
+          </li>
         }
-        @if (menuAdvanced) {
-          <li><a href="/Controlling">Controlling</a></li>
+        @if (User.IsInRole("Advanced") || User.IsInRole("High"))
+        {
+          <li>
+            <a href="/Controlling">Controlling</a>
+          </li>
         }
-        @if (menuHigh) {
-          <li><a href="/Users">Users</a></li>
+        @if (User.IsInRole("High"))
+        {
+          <li>
+            <a href="/Users">Users</a>
+          </li>
+        }
+      </ul>
+      <ul class="right">
+        @if (User.Identity.Name != null)
+        {
+          <li>
+            <span>Hallo @User.Identity.Name</span>
+          </li>
+          <li onclick="logoutForm.submit();">
+            <a>Logout</a>
+          </li>
         }
       </ul>
     </div>
   </nav>
 
-
   <!-- Page content -->
-  <div class="container">
+  <div class="page-container">
     @RenderBody()
-    <hr />
-    <footer style="position: absolute; bottom: 0;">
-      <p>ONAX AG - it solutions</p>
-    </footer>
   </div>
 
-  <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-          crossorigin="anonymous"></script>
-  <!-- Materialize -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <footer>
+    <span>ONAX AG - it solutions</span>
+  </footer>
 
+  <!-- Custom JS (This script is already imported in the head, so the function calls work, but event handlers need to be defined after the elements have been created) -->
   <script src="~/js/site.js" asp-append-version="true"></script>
-
 </body>
-
 </html>

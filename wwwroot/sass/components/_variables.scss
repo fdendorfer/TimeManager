@@ -70,7 +70,7 @@ $button-disabled-color: #9F9F9F !default;
 // Raised buttons
 $button-raised-background: $secondary-color !default;
 $button-raised-background-hover: lighten($button-raised-background, 5%) !default;
-$button-raised-color: #fff !default;
+$button-raised-color: #000 !default;
 
 // Large buttons
 $button-large-font-size: 15px !default;
@@ -91,7 +91,7 @@ $button-flat-disabled-color: lighten(#999, 10%) !default;
 // Floating buttons
 $button-floating-background: $secondary-color !default;
 $button-floating-background-hover: $button-floating-background !default;
-$button-floating-color: #fff !default;
+$button-floating-color: #000 !default;
 $button-floating-size: 40px !default;
 $button-floating-radius: 50% !default;
 
@@ -144,7 +144,7 @@ $datepicker-focus: rgba(0,0,0, .05) !default;
 $datepicker-selected: $secondary-color !default;
 $datepicker-selected-outfocus: desaturate(lighten($secondary-color, 35%), 15%) !default;
 $datepicker-day-focus: transparentize(desaturate($secondary-color, 5%), .75) !default;
-$datepicker-disabled-day-color: rgba(0, 0, 0, .3) !default;
+$datepicker-disabled-day-color: rgba(255, 255, 255, .5) !default;
 
 $timepicker-clock-color: rgba(0, 0, 0, .87) !default;
 $timepicker-clock-plate-bg: #eee !default;
@@ -173,7 +173,7 @@ $input-focus-color: $secondary-color !default;
 $input-font-size: 16px !default;
 $input-margin-bottom: 8px;
 $input-margin: 0 0 $input-margin-bottom 0 !default;
-$input-padding: 0 !default;
+$input-padding: 0 10px 0 10px !default;
 $label-font-size: .8rem !default;
 $input-disabled-color: rgba(0,0,0, .42) !default;
 $input-disabled-solid-color: #949494 !default;
@@ -199,7 +199,7 @@ $select-focus: 1px solid lighten($secondary-color, 47%) !default;
 $select-option-hover: rgba(0,0,0,.08) !default;
 $select-option-focus: rgba(0,0,0,.08) !default;
 $select-option-selected: rgba(0,0,0,.03) !default;
-$select-padding: 5px !default;
+$select-padding: 0 10px 0 10px !default;
 $select-radius: 2px !default;
 $select-disabled-color: rgba(0,0,0,.3) !default;
 
@@ -287,7 +287,7 @@ $tabs-bg-color: #fff !default;
 // 18. Tables
 // ==========================================================================
 
-$table-border-color: rgba(0,0,0,.12) !default;
+$table-border-color: rgba(255,255,255,.12) !default;
 $table-striped-color: rgba(242, 242, 242, 0.5) !default;
 
 

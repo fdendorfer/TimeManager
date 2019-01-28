@@ -1,5 +1,72 @@
 html {
   font-family: 'Roboto', sans-serif;
+  color: white;
+  background-color: #000000;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.modal, .modal .modal-footer {
+  background-color: #333333;
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 4em;
+}
+
+.page-container {
+  height: auto;
+  min-height: 80vh;
+  width: 90%;
+  background: #333333;
+  border-radius: 2em;
+  padding: 2em;
+  margin: 2em auto 0 auto;
+}
+
+body > footer {
+  height: 3em;
+  width: 90%;
+  border-radius: 2em 2em 0 0;
+  background: #333333;
+  padding: .75em 2em;
+  position: absolute;
+  bottom: 0;
+  left: 5vw;
+}
+
+.table-container table {
+  width: 100%;
+}
+
+.table-container tbody{
+  display: block;
+  height: var(--height);
+  overflow: auto;
+}
+.table-container thead, .table-container tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.modal.modal-fixed-footer .modal-footer {
+  border: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #aecc53;
+}
+
+nav, nav ul a, nav * {
+  color: black;
+  font-size: 1.05em;
 }
 
 .datepicker-modal {
@@ -7,5 +74,5 @@ html {
 }
 
 .datepicker-modal .datepicker-date-display {
-  display: none !important;
+  display: none;
 }

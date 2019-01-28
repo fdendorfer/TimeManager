@@ -6,7 +6,7 @@ select.browser-default { display: block; }
 
 select {
   background-color: $select-background;
-  width: 100%;
+  width: calc(100% - #{nth($select-padding, 2)} - #{nth($select-padding, 4)});
   padding: $select-padding;
   border: $select-border;
   border-radius: $select-radius;
@@ -55,6 +55,7 @@ select {
   }
 
   position: relative;
+  width: calc(100% - #{nth($select-padding, 2)} - #{nth($select-padding, 4)});
 
   input.select-dropdown {
     &:focus {
@@ -62,7 +63,7 @@ select {
     }
     position: relative;
     cursor: pointer;
-    background-color: transparent;
+    background-color: $select-background;
     border: none;
     border-bottom: $input-border;
     outline: none;
@@ -71,7 +72,7 @@ select {
     width: 100%;
     font-size: $input-font-size;
     margin: $input-margin;
-    padding: 0;
+    padding: $select-padding;
     display: block;
     user-select:none;
     z-index: 1;

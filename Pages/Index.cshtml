@@ -1,33 +1,30 @@
 ﻿@page
 @model IndexModel
 @{ ViewData["Title"] = "Home Page"; }
-@{ 
-  <text>
-    <script type="text/javascript">
-      if (window.location.pathname == "/") {
-        window.location.href = "/OwnTimes";
-      }
-    </script>
-  </text>
+@if (User.Identity.Name != null)
+{
+  Response.Redirect("/OwnTimes");
 }
+<div id="Index">
+  <h1>Time Manager</h1>
+  <h4>Zeiterfassungs Tool der ONAX AG</h4>
+  <h6>Aktuelle Version: 0.1.0</h6>
 
-<h1>Time Manager der ONAX AG</h1>
+  <p>
+    Bitte loggen Sie sich ein, um Zeiten zu erfassen oder anzusehen. Falls Sie kein Login haben, wenden Sie sich bitte an den Systemadministrator.
+  </p>
 
-<p>
-  Bitte loggen Sie sich ein, um Zeiten zu erfassen oder anzusehen. Falls Sie
-  kein Login haben, wenden Sie sich bitte an den Systemadministrator.
-</p>
+  <h2>Login</h2>
+  <form method="POST">
+    <label asp-for="Login.Username">Benutzername</label>
+    <span class="red-text" asp-validation-for="Login.Username"></span>
+    <input asp-for="Login.Username" />
 
-<h2>Login</h2>
-<form method="POST">
-  <label asp-for="Login.Username">Benutzername</label>
-  <span class="red-text" asp-validation-for="Login.Username"></span>
-  <input asp-for="Login.Username" />
+    <label asp-for="Login.Password">Passwort</label>
+    <span class="red-text" asp-validation-for="Login.Password"></span>
+    <input asp-for="Login.Password" type="password" />
 
-  <label asp-for="Login.Password">Passwort</label>
-  <span class="red-text" asp-validation-for="Login.Password"></span>
-  <input asp-for="Login.Password" type="password" />
-
-  <button class="btn-small" type="submit" value="Login">Log in</button>
-  <div class="red-text" asp-validation-summary="ModelOnly"></div>
-</form>
+    <button class="btn-small" type="submit" value="Login">Log in</button>
+    <div class="red-text" asp-validation-summary="ModelOnly"></div>
+  </form>
+</div>
