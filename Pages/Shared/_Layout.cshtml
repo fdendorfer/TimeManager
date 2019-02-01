@@ -57,7 +57,7 @@
       <ul class="right">
         @if (User.Identity.Name != null)
         {
-          <li>
+          <li class="hide-on-small-only">
             <span>Hallo @User.Identity.Name</span>
           </li>
           <li onclick="logoutForm.submit();">

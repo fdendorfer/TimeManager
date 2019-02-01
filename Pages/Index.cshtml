@@ -16,15 +16,13 @@
 
   <h2>Login</h2>
   <form method="POST">
-    <label asp-for="Login.Username">Benutzername</label>
-    <span class="red-text" asp-validation-for="Login.Username"></span>
-    <input asp-for="Login.Username" />
+    <label asp-for="Login.Username">Benutzername</label><br />
+    <input asp-for="Login.Username" /><br />
 
-    <label asp-for="Login.Password">Passwort</label>
-    <span class="red-text" asp-validation-for="Login.Password"></span>
-    <input asp-for="Login.Password" type="password" />
+    <label asp-for="Login.Password">Passwort</label><br />
+    <input asp-for="Login.Password" type="password" /><br />
 
-    <button class="btn-small" type="submit" value="Login">Log in</button>
+    <button class="btn-small" type="submit" value="Login">Log in</button><br />
     <div class="red-text" asp-validation-summary="ModelOnly"></div>
   </form>
 </div>

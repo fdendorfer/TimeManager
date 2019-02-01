@@ -9,8 +9,6 @@ using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using TimeManager.Database;
 using TimeManager.Model;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace TimeManager.Extensions
 {
