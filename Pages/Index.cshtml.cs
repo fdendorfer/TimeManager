@@ -23,11 +23,6 @@ namespace TimeManager.Pages
       _db = db;
     }
 
-    public async void OnGetAsync()
-    {
-      await Test.Do();
-    }
-
     public async Task<IActionResult> OnPostAsync()
     {
       // Is model validation successful

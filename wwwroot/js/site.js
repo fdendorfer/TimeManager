@@ -152,9 +152,9 @@ function writeOwnTimesTables(last30days, selectedUser) {
         row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
         row.insertCell(++i).appendChild(document.createTextNode(e.reason));
         // Checkbox
-        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" /><span></span></label>`);
+        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" disabled /><span></span></label>`);
         if (e.approved)
-          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked /><span></span></label>`);
+          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked disabled /><span></span></label>`);
         row.insertCell(++i).appendChild(checkbox[0]);
         // Edit and delete buttons
         let buttons = $(`<div><button type="button" class="btn-small" onclick="absenceEdit ('${e.id}')">
@@ -236,7 +236,6 @@ function overtimeEdit(id) {
       $('#overtimeWindow select').find(`option[value="${json.IdOvertimeDetail.toUpperCase()}"]`).prop('selected', true);
       $('#overtimeWindow select').formSelect();
       $(inputs[4]).val(json.ID);
-
     }
   });
 }

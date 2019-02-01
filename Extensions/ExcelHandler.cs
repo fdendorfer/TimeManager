@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -25,30 +24,6 @@ namespace TimeManager.Extensions
         {
           // Workbook
           var wb = new XSSFWorkbook();
-
-          // Style
-          //XSSFCellStyle style;
-
-          // Row 0
-          //var font = wb.CreateFont();
-          //font.IsBold = true;
-          //style = (XSSFCellStyle)wb.CreateCellStyle();
-          //style.SetFont(font);
-          //style.BorderRight = style.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-
-          // Row 1
-          //font = wb.CreateFont();
-          //font.IsBold = true;
-          //font.Color = IndexedColors.White.Index;
-          //style = (XSSFCellStyle)wb.CreateCellStyle();
-          //style.SetFont(font);
-          //var black = new XSSFColor();
-          //black.Indexed = IndexedColors.Black.Index;
-          //style.SetFillBackgroundColor(black);
-
-          //font = wb.CreateFont();
-          //font.IsBold = true;
-
 
           // All years which are used by Absences
           var yearsWithHolidays = db.Absence
@@ -73,9 +48,7 @@ namespace TimeManager.Extensions
             // Gets the last week of the year and makes it the total of weeks
             var totalWeeks = GetWeek(DateTime.Parse(year.ToString() + "-12-31"));
 
-            //var sh = wb.CloneSheet(wb.GetSheetIndex("template"));
-            //wb.SetSheetName(wb.GetSheetIndex(sh), year.ToString());
-            var sh = wb.CreateSheet(year.ToString());
+            var sh = (XSSFSheet)wb.CreateSheet(year.ToString());
 
             var colCount = 1 + usersThisYear.Count;
             var rowNum = 0;
@@ -94,17 +67,17 @@ namespace TimeManager.Extensions
             row = sh.CreateRow(++rowNum);
             colNum = 0;
 
-            // Style
             sh.AddMergedRegion(new CellRangeAddress(rowNum, rowNum + 3, colNum, colNum));
-
             row.CreateCell(colNum).SetCellValue(year);
             foreach (var user in usersThisYear)
             {
               var colLetter = CellReference.ConvertNumToColString(++colNum);
               string formula = $"{colLetter}5/{colLetter}3";
-              var cell = row.CreateCell(colNum);
+              XSSFCell cell = (XSSFCell)row.CreateCell(colNum);
               cell.SetCellFormula(formula);
-              cell.CellStyle.DataFormat = wb.CreateDataFormat().GetFormat("0.00%");
+              XSSFCellStyle style = (XSSFCellStyle)wb.CreateCellStyle();
+              style.SetDataFormat(9);
+              cell.CellStyle = style;
             }
 
             // Row 2
@@ -181,8 +154,101 @@ namespace TimeManager.Extensions
                 row.CreateCell(++colNum).SetCellValue(Int32.Parse(user.Value[i].ToString()));
               }
             }
+
+            // Style
+            for (int i = 1; i <= sh.GetRow(0).LastCellNum; i++)
+              sh.AutoSizeColumn(i, true); // Not working
+
+            // Conditional formatting
+            IConditionalFormattingRule rule;
+            IPatternFormatting pf;
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotEqual, "123456");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Black.Index;
+            rule.GetFontFormatting().SetFontStyle(false, true);
+            rule.CreateBorderFormatting().BorderBottom = rule.CreateBorderFormatting().BorderRight = BorderStyle.Thin;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"A1:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}1") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.LessThan, "0");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Red.Index;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"B4:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}4") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.GreaterThan, "0");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Black.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Grey25Percent.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"B6:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}{sh.LastRowNum + 1}") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.GreaterThan, "1");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.White.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Violet.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"B2:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}2") },
+              rule
+            );
+
+            rule = (XSSFConditionalFormattingRule)sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.GreaterThan, "0.8");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Green.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.LightGreen.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"B2:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}2") },
+              rule
+            );
+
+            rule = (XSSFConditionalFormattingRule)sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.LessThanOrEqual, "0.8");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Black.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Red.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"B2:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}2") },
+              rule
+            );
+
+            rule = (XSSFConditionalFormattingRule)sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotEqual, "123456");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.Violet.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Black.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new CellRangeAddress[] { CellRangeAddress.ValueOf($"B3:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}3") },
+              rule
+            );
+
+            rule = (XSSFConditionalFormattingRule)sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotEqual, "123456");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.BrightGreen.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Black.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new CellRangeAddress[] { CellRangeAddress.ValueOf($"B4:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}4") },
+              rule
+            );
+
+            rule = (XSSFConditionalFormattingRule)sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotEqual, "123456");
+            rule.CreateFontFormatting().FontColorIndex = IndexedColors.White.Index;
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Black.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new CellRangeAddress[] { CellRangeAddress.ValueOf($"A2:{CellReference.ConvertNumToColString(sh.GetRow(0).LastCellNum - 1)}5"), CellRangeAddress.ValueOf($"A2:A{sh.LastRowNum + 1}") },
+              rule
+            );
           }
-          XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
 
           wb.Write(outFile);
           outFile.Close();
@@ -220,6 +286,12 @@ namespace TimeManager.Extensions
           row.CreateCell(colNum).SetCellValue("Kürzel");
           row.CreateCell(++colNum).SetCellValue("Stunden");
           row.CreateCell(++colNum).SetCellValue("Tage");
+          var region = CellRangeAddress.ValueOf("A2:C2");
+          var border = (int)BorderStyle.Medium;
+          RegionUtil.SetBorderTop(border, region, sh, wb);
+          RegionUtil.SetBorderRight(border, region, sh, wb);
+          RegionUtil.SetBorderBottom(border, region, sh, wb);
+          RegionUtil.SetBorderLeft(border, region, sh, wb);
 
           // Users loop
           foreach (var user in users)
@@ -227,14 +299,14 @@ namespace TimeManager.Extensions
             // Create sheet per user
             sh = wb.CreateSheet(user.Username);
 
-            // Row 1
+            // Row 0
             rowNum = 0;
             row = sh.CreateRow(rowNum);
             colNum = 0;
             row.CreateCell(colNum).SetCellValue(year);
             row.CreateCell(++colNum).SetCellValue(user.Username);
 
-            // Row 2
+            // Row 1
             row = sh.CreateRow(++rowNum);
             colNum = 0;
             row.CreateCell(colNum).SetCellValue("Datum");
@@ -243,8 +315,15 @@ namespace TimeManager.Extensions
             row.CreateCell(++colNum).SetCellValue("Zeit");
             row.CreateCell(++colNum).SetCellValue("Zuschlag");
             row.CreateCell(++colNum).SetCellValue("Total");
+            // Borders
+            region = CellRangeAddress.ValueOf("A2:F2");
+            border = (int)BorderStyle.Medium;
+            RegionUtil.SetBorderTop(border, region, sh, wb);
+            RegionUtil.SetBorderRight(border, region, sh, wb);
+            RegionUtil.SetBorderBottom(border, region, sh, wb);
+            RegionUtil.SetBorderLeft(border, region, sh, wb);
 
-            // Row 3+
+            // Row 2+
             var overtimes = (from o in db.Overtime
                              where (o.Date.Year == year) && (o.IdUser == user.ID)
                              orderby o.Date
@@ -270,7 +349,39 @@ namespace TimeManager.Extensions
             row.CreateCell(colNum += 2).SetCellFormula("F50/8.5");
             row.CreateCell(++colNum).SetCellValue("<<<<");
             row.CreateCell(++colNum).SetCellFormula("SUM(F3:F49)");
+            var style = (XSSFCellStyle)wb.CreateCellStyle();
+            var font = wb.CreateFont();
+            font.FontHeight = wb.GetFontAt(0).FontHeight;
+            font.IsBold = true;
+            style.SetFont(font);
+            foreach (var cell in row)
+              cell.CellStyle = style;
 
+
+            // Styles for entry rows
+            var cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderTop = cs.BorderRight = cs.BorderBottom = cs.BorderLeft = BorderStyle.Thin;
+            border = (int)BorderStyle.Thin;
+            for (var i = 2; i <= 48; i++)
+            {
+              var r = sh.GetRow(i);
+              if (r != null)
+                foreach (var cell in r.Cells)
+                  cell.CellStyle = cs;
+            }
+
+            // Conditional formatting
+            IConditionalFormattingRule rule;
+            IPatternFormatting pf;
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotEqual, "123456");
+            pf = (XSSFPatternFormatting)rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.LightTurquoise.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf("A50:F50"), CellRangeAddress.ValueOf("F3:F50") },
+              rule
+            );
 
             // Add user to overview sheet
             sh = wb.GetSheet("Übersicht");
@@ -279,8 +390,51 @@ namespace TimeManager.Extensions
             row.CreateCell(colNum).SetCellValue(user.Username);
             row.CreateCell(++colNum).SetCellFormula(user.Username + "!$F$50");
             row.CreateCell(++colNum).SetCellFormula(user.Username + "!$D$50");
+            // Borders for these cells
+            style = null;
+            style = (XSSFCellStyle)wb.CreateCellStyle();
+            style.BorderTop = style.BorderRight = style.BorderBottom = style.BorderLeft = BorderStyle.Thin;
+            border = (int)BorderStyle.Thin;
+            foreach (var cell in row.Cells)
+              cell.CellStyle = style;
+
+            // Conditional formatting
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotBetween, "0", "5");
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Red.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"C3:C{sh.LastRowNum + 1}") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.Between, "4", "5");
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Orange.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"C3:C{sh.LastRowNum + 1}") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.Between, "3", "4");
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Yellow.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"C3:C{sh.LastRowNum + 1}") },
+              rule
+            );
+
+            rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.Between, "0", "5");
+            pf = rule.CreatePatternFormatting();
+            pf.FillBackgroundColor = IndexedColors.Green.Index;
+            pf.FillPattern = FillPattern.SolidForeground;
+            sh.SheetConditionalFormatting.AddConditionalFormatting(
+              new[] { CellRangeAddress.ValueOf($"C3:C{sh.LastRowNum + 1}") },
+              rule
+            );
           }
-          //XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
 
           wb.Write(outFile);
           outFile.Close();

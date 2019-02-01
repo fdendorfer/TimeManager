@@ -37,6 +37,7 @@ namespace TimeManager.Pages
       userList = _db.User.ToArray();
     }
 
+    // This returns eighter the page normally or a json array of lists containing the absences and overtimes for a specific user eighter created in the last 30 days or all
     public IActionResult OnGet([FromQuery] string last30days, [FromQuery] string selectedUser)
     {
       if (last30days == null && selectedUser == null)
@@ -162,13 +163,6 @@ namespace TimeManager.Pages
 
         return StatusCode(202); // HTTP 202 ACCEPTED
       }
-      foreach (var item in ModelState.Values.Where(v => v.Errors != null))
-      {
-        foreach (var item2 in item.Errors)
-        {
-          ModelState.AddModelError(string.Empty, item2.ErrorMessage);
-        }
-      }
       return Page();
     }
 
@@ -204,13 +198,6 @@ namespace TimeManager.Pages
         _db.SaveChanges();
 
         return StatusCode(202); // HTTP 202 ACCEPTED
-      }
-      foreach (var item in ModelState.Values.Where(v => v.Errors != null))
-      {
-        foreach (var item2 in item.Errors)
-        {
-          ModelState.AddModelError(string.Empty, item2.ErrorMessage);
-        }
       }
       return Page();
     }
