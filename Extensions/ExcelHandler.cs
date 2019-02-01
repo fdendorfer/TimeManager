@@ -9,6 +9,8 @@ using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using TimeManager.Database;
 using TimeManager.Model;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace TimeManager.Extensions
 {
@@ -27,7 +29,9 @@ namespace TimeManager.Extensions
 
           // All years which are used by Absences
           var yearsWithHolidays = db.Absence
-            .Select(a => new[] { a.AbsentFrom.Year, a.AbsentTo.Year })
+            .Join(db.User, a => a.IdUser, u => u.ID, (a, u) => new { a, u })
+            .Where((au) => au.u.Department == department)
+            .Select(au => new[] { au.a.AbsentFrom.Year, au.a.AbsentTo.Year })
             .SelectMany(m => m)
             .OrderBy(o => o)
             .Distinct()
