@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NPOI.SS.Formula.Atp;
 using TimeManager.Database;
 
 namespace TimeManager
@@ -23,6 +26,11 @@ namespace TimeManager
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      // Adds Accept-Compression Header to HTTP requests / Adds compression for brotli, gzip and all needed mime types by default
+      services.AddResponseCompression(options => {
+        options.EnableForHttps = true;
+      });
+      
       services.AddMvc().AddRazorPagesOptions(options =>
         {
           // Set all permissions for the pages
@@ -77,8 +85,14 @@ namespace TimeManager
         app.UseHsts();  // Forces HTTPS
       }
 
-      app.UseHttpsRedirection();
-      app.UseStaticFiles();
+      app.UseResponseCompression();
+      app.UseStaticFiles(new StaticFileOptions
+      {
+        OnPrepareResponse = ctx =>
+        {
+          ctx.Context.Response.Headers.Add("cache-control", "public, max-age=31536000");
+        }
+      });
 
       var cookieOptions = new CookieAuthenticationOptions();
       cookieOptions.Cookie.HttpOnly = false;
