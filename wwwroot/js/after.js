@@ -32,99 +32,12 @@ $('#OwnTimes #filter, #OwnTimes select').change(function (e) {
   writeOwnTimesTables(last30days, selectedUser);
 });
 
-function writeOwnTimesTables(last30days, selectedUser) {
-  // Remove old rows
-  $('#OwnTimes tbody tr').remove();
-
-  // Call OnGet() to get json with all data filtered
-  $.ajax({
-    url: `/OwnTimes?last30days=${last30days}&selectedUser=${selectedUser}`,
-    success: (data) => {
-      // Table selectors
-      let absenceTable = document.querySelectorAll('#OwnTimes tbody')[0];
-      let overtimeTable = document.querySelectorAll('#OwnTimes tbody')[1];
-      // Fill first table with data from json
-      data[0].forEach(e => {
-        // New row
-        let row = absenceTable.insertRow(absenceTable.rows.length);
-        let i = 0;
-        // Inserting values from json into table
-        row.insertCell(i).appendChild(document.createTextNode(new Date(e.absentFrom).toLocaleString('de-CH')));
-        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
-        row.insertCell(++i).appendChild(document.createTextNode(e.reason));
-        // Checkbox
-        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" disabled /><span></span></label>`);
-        if (e.approved)
-          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked disabled /><span></span></label>`);
-        row.insertCell(++i).appendChild(checkbox[0]);
-        // Edit and delete buttons
-        let buttons = $(`<div><button type="button" class="btn-small" onclick="absenceEdit ('${e.id}')">
-<i class="material-icons">edit</i>
-</button>
-<button type="button" class="btn-small" onclick="absenceDelete('${e.id}')">
-<i class="material-icons">delete</i>
-</button></div>`);
-        row.insertCell(++i).appendChild(buttons[0]);
-      });
-
-      // Fill second table with data from json
-      data[1].forEach(e => {
-        // New row
-        let row = overtimeTable.insertRow(overtimeTable.rows.length);
-        let i = 0;
-        // Inserting values from json into table
-        row.insertCell(i).appendChild(document.createTextNode(new Date(e.o.date).toLocaleDateString('de-CH')));
-        row.insertCell(++i).appendChild(document.createTextNode(e.o.customer));
-        row.insertCell(++i).appendChild(document.createTextNode(e.o.hours));
-        row.insertCell(++i).appendChild(document.createTextNode(e.od.rate));
-        // Edit and delete buttons
-        let buttons = $(`<div><button type="button" class="btn-small" onclick="overtimeEdit ('${e.id}')">
-<i class="material-icons">edit</i>
-</button>
-<button type="button" class="btn-small" onclick="overtimeDelete('${e.id}')">
-<i class="material-icons">delete</i>
-</button></div>`);
-        row.insertCell(++i).appendChild(buttons[0]);
-      });
-    }
-  });
-}
-
 // * Controlling
 // Checkbox click listener to filter table
 $('#Controlling #filter').click(() => {
   let uncheckedOnly = $('#Controlling #filter').prop('checked');
   writeControllingTable(uncheckedOnly);
 });
-
-function writeControllingTable(uncheckedOnly) {
-  // Remove old rows
-  $('#Controlling tbody tr').remove();
-
-  // Call OnGet() to get json with all users filtered
-  $.ajax({
-    url: '/Controlling?uncheckedOnly=' + uncheckedOnly,
-    success: (data) => {
-      // Table selector
-      let table = document.querySelector('#Controlling tbody');
-      // For each line in json
-      data.forEach(e => {
-        // New row
-        let row = table.insertRow(table.rows.length);
-        let i = 0;
-        // Inserting values from json into table
-        row.insertCell(i).appendChild(document.createTextNode(e.name));
-        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentFrom).toLocaleString('de-CH')));
-        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
-        row.insertCell(++i).appendChild(document.createTextNode(e.reason));
-        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" /><span></span></label>`);
-        if (e.approved)
-          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked /><span></span></label>`);
-        row.insertCell(++i).appendChild(checkbox[0]);
-      });
-    }
-  });
-}
 
 $('#Controlling #ferienliste').click(() => {
   window.open('/Controlling?handler=Ferienliste', '_blank');
@@ -148,7 +61,6 @@ $('#Controlling').on('change', 'input[name="isIO"]', e => {
     }
   });
 });
-
 
 // * Users
 // Checkbox click listener to filter table

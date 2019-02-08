@@ -74,17 +74,32 @@ function materializeStuff() {
       ],
       weekdaysShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
       weekdaysAbbrev: ['S', 'M', 'D', 'M', 'D', 'F', 'S']
+    },
+    // Sets 
+    onSelect: elem => {
+      switch (elem.getUTCDay()) { // GetUTCDay according to i18n.weekdays option
+        case 6: // Sunday
+          $('#overtimeForm select').val($('#overtimeForm option')[2].value)
+          break;
+        case 5: // Saturday
+          $('#overtimeForm select').val($('#overtimeForm option')[1].value)
+          break;
+        default: // Unter the week
+          $('#overtimeForm select').val($('#overtimeForm option')[0].value)
+          break;
+      }
+      $('#overtimeForm select').formSelect();
     }
   });
   // Build Materialize timepickers
-  materializeBuilder(M.Timepicker, timePickerList, {
-    container: 'body',
-    i18n: {
-      cancel: 'Abbrechen',
-      done: 'Ok'
-    },
-    twelveHour: false
-  });
+  //materializeBuilder(M.Timepicker, timePickerList, {
+  //  container: 'body',
+  //  i18n: {
+  //    cancel: 'Abbrechen',
+  //    done: 'Ok'
+  //  },
+  //  twelveHour: false
+  //});
 
   // Let Materialize search for unitialized components, without class no-autoinit
   M.AutoInit();
@@ -97,33 +112,122 @@ function materializeBuilder(component, elements, options) {
   });
 }
 
-// Fills absencePartial, when opened for editing
+function writeOwnTimesTables(last30days, selectedUser) {
+  // Remove old rows
+  $('#OwnTimes tbody tr').remove();
+
+  // Call OnGet() to get json with all data filtered
+  $.ajax({
+    url: `/OwnTimes?last30days=${last30days}&selectedUser=${selectedUser}`,
+    success: (data) => {
+      // Table selectors
+      let absenceTable = document.querySelectorAll('#OwnTimes tbody')[0];
+      let overtimeTable = document.querySelectorAll('#OwnTimes tbody')[1];
+      // Fill first table with data from json
+      data[0].forEach(e => {
+        // New row
+        let row = absenceTable.insertRow(absenceTable.rows.length);
+        let i = 0;
+        // Inserting values from json into table
+        row.insertCell(i).appendChild(document.createTextNode(new Date(e.absentFrom).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(e.reason));
+        // Checkbox
+        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" disabled /><span></span></label>`);
+        if (e.approved)
+          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked disabled /><span></span></label>`);
+        row.insertCell(++i).appendChild(checkbox[0]);
+        // Edit and delete buttons
+        let buttons = $(`<div><button type="button" class="btn-small" onclick="absenceEdit ('${e.id}')">
+<i class="material-icons">edit</i>
+</button>
+<button type="button" class="btn-small" onclick="absenceDelete('${e.id}')">
+<i class="material-icons">delete</i>
+</button></div>`);
+        row.insertCell(++i).appendChild(buttons[0]);
+      });
+
+      // Fill second table with data from json
+      data[1].forEach(e => {
+        // New row
+        let row = overtimeTable.insertRow(overtimeTable.rows.length);
+        let i = 0;
+        // Inserting values from json into table
+        row.insertCell(i).appendChild(document.createTextNode(new Date(e.o.date).toLocaleDateString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(e.o.customer));
+        row.insertCell(++i).appendChild(document.createTextNode(e.o.hours));
+        row.insertCell(++i).appendChild(document.createTextNode(e.od.rate));
+        // Edit and delete buttons
+        let buttons = $(`<div><button type="button" class="btn-small" onclick="overtimeEdit ('${e.o.id}')">
+<i class="material-icons">edit</i>
+</button>
+<button type="button" class="btn-small" onclick="overtimeDelete('${e.o.id}')">
+<i class="material-icons">delete</i>
+</button></div>`);
+        row.insertCell(++i).appendChild(buttons[0]);
+      });
+
+      // Fill remaining absences and done overtimes 
+      $('#absencesRemaining').html(Math.round((data[2][1] - data[2][0] + (data[3] / 8.5)) * 100) / 100);
+      $('#doneOvertimes').html(data[3]);
+    }
+  });
+}
+
+function writeControllingTable(uncheckedOnly) {
+  // Remove old rows
+  $('#Controlling tbody tr').remove();
+
+  // Call OnGet() to get json with all users filtered
+  $.ajax({
+    url: '/Controlling?uncheckedOnly=' + uncheckedOnly,
+    success: (data) => {
+      // Table selector
+      let table = document.querySelector('#Controlling tbody');
+      // For each line in json
+      data.forEach(e => {
+        // New row
+        let row = table.insertRow(table.rows.length);
+        let i = 0;
+        // Inserting values from json into table
+        row.insertCell(i).appendChild(document.createTextNode(e.name));
+        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentFrom).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(new Date(e.absentTo).toLocaleString('de-CH')));
+        row.insertCell(++i).appendChild(document.createTextNode(e.reason));
+        let checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" /><span></span></label>`);
+        if (e.approved)
+          checkbox = $(`<label><input name="isIO" data-id-absence="${e.idAbsence}" type="checkbox" class="filled-in" checked /><span></span></label>`);
+        row.insertCell(++i).appendChild(checkbox[0]);
+      });
+    }
+  });
+}
+
 function absenceEdit(id) {
   $.ajax({
     url: '/OwnTimes?handler=Absence&id=' + id,
     success: data => {
-      // Array of all input fields in absenceWindow
-      let inputs = $('#absenceWindow input');
       // Js object from JSON
       let json = $.parseJSON(data);
       // Prefill fields with data from json
-      $(inputs[0]).val(json.AbsenceDateFrom);
-      $(inputs[1]).val(json.AbsenceDateTo);
-      $(inputs[2]).prop('checked', json.FullDay);
-      $(inputs[3]).val(json.AbsenceTimeFrom);
-      $(inputs[4]).val(json.AbsenceTimeTo);
-      $(inputs[5]).prop('checked', json.Negative);
+      $('#absenceWindow input[name="Absence.AbsenceDateFrom"]').val(json.AbsenceDateFrom);
+      $('#absenceWindow input[name="Absence.FromAfternoon"]:eq(0)').prop('checked', !json.FromAfternoon);
+      $('#absenceWindow input[name="Absence.FromAfternoon"]:eq(1)').prop('checked', json.FromAfternoon);
+      $('#absenceWindow input[name="Absence.AbsenceDateTo"]').val(json.AbsenceDateTo);      
+      $('#absenceWindow input[name="Absence.ToAfternoon"]:eq(0)').prop('checked', !json.ToAfternoon);
+      $('#absenceWindow input[name="Absence.ToAfternoon"]:eq(1)').prop('checked', json.ToAfternoon);
+      $('#absenceWindow input[name="Absence.Negative"]').prop('checked', json.Negative);
 
       // Radio buttons Reason
-      let reason = $(inputs).filter(`[value='${json.OtherReason}']`);
+      let reason = $('#absenceWindow input[name="Absence.Reason"]').filter(`[value='${json.OtherReason}']`);
       if (reason.length > 0) {
         $(reason[0]).prop('checked', true);
       } else {
-        $(inputs[11]).prop('checked', true);
-        $(inputs[12]).val(json.OtherReason);
+        $('#absenceWindow input[name="Absence.Reason"]').last().prop('checked', true);
+        $('#absenceWindow input[name="Absence.OtherReason"]').val(json.OtherReason);
       }
-      $(inputs[13]).prop('checked', json.Approved);
-      $(inputs[14]).val(json.ID);
+      $('#absenceWindow input[name="Absence.Approved"]').prop('checked', json.Approved);
+      $('#absenceWindow input[name="Absence.ID"]').val(json.ID);
 
       $('#absenceWindow').modal('open');
     }

@@ -85,8 +85,8 @@ GO
 -- **************************************************
 INSERT INTO [Permission] ([Level], [Description], [DescriptionLong])
 	VALUES (1, 'Normal', 'Users, who can only see their own times'),
-	(2, 'Advanced', 'Can approve absences of Normal users'),
-	(3, 'High', 'Can make changes to Details and Users')
+	(2, 'Manager', 'Can approve absences of Normal users'),
+	(3, 'Admin', 'Can make changes to Details and Users')
 GO
 
 -- **************************************************

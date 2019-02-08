@@ -17,15 +17,9 @@ namespace TimeManager.Model
     [RequiredIf(relatedProperty = "AbsenceDateFrom", propertyRelation = RequiredIfAttribute.Result.dateDiffPositive, ErrorMessage = "'Abwesend bis' darf nicht vor Abwesend von sein")]
     public string AbsenceDateTo { get; set; }
 
-    public bool FullDay { get; set; }
+    public bool FromAfternoon { get; set; }
 
-    [RequiredIf(relatedProperty = "FullDay", propertyRelation = RequiredIfAttribute.Result.mustBeTrue, ErrorMessage = "'Zeit von' darf nicht leer sein")]
-    [RegularExpression(@"^(\d{2})\:(\d{2})$", ErrorMessage = "Die Eingabe muss in folgendem Format sein: HH:mm")]
-    public string AbsenceTimeFrom { get; set; }
-
-    [RequiredIf(relatedProperty = "FullDay", propertyRelation = RequiredIfAttribute.Result.mustBeTrue, ErrorMessage = "'Zeit bis' darf nicht leer sein")]
-    [RegularExpression(@"^(\d{2})\:(\d{2})$", ErrorMessage = "Die Eingabe muss in folgendem Format sein: HH:mm")]
-    public string AbsenceTimeTo { get; set; }
+    public bool ToAfternoon { get; set; }
 
     public bool Negative { get; set; }
 

@@ -39,9 +39,9 @@ namespace TimeManager
 
           options.Conventions.AuthorizePage("/OwnTimes", "PermissionNormal");
 
-          options.Conventions.AuthorizePage("/Controlling", "PermissionAdvanced");
+          options.Conventions.AuthorizePage("/Controlling", "PermissionManager");
 
-          options.Conventions.AuthorizePage("/Users", "PermissionHigh");
+          options.Conventions.AuthorizePage("/Users", "PermissionAdmin");
         }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
       // Cross-site request blocking
@@ -59,9 +59,9 @@ namespace TimeManager
       services.AddAuthorization(options =>
       {
         options.DefaultPolicy = new AuthorizationPolicyBuilder("Cookies").RequireAuthenticatedUser().Build();
-        options.AddPolicy("PermissionNormal", policy => policy.RequireRole("Normal", "Advanced", "High"));
-        options.AddPolicy("PermissionAdvanced", policy => policy.RequireRole("Advanced", "High"));
-        options.AddPolicy("PermissionHigh", policy => policy.RequireRole("High"));
+        options.AddPolicy("PermissionNormal", policy => policy.RequireRole("Normal", "Manager", "Admin"));
+        options.AddPolicy("PermissionManager", policy => policy.RequireRole("Manager", "Admin"));
+        options.AddPolicy("PermissionAdmin", policy => policy.RequireRole("Admin"));
       });
 
       // Database service

@@ -8,35 +8,40 @@
     <h4>Abwesenheit erfassen oder ändern</h4>
     <form id="absenceForm" asp-page-handler="Absence" method="POST" style="display: grid; grid-template-columns: 1fr 4fr; grid-gap: 1em;">
 
-      <div><span>Abwesend von:</span></div>
-      <div>
+      <span>Abwesend von:</span>
+      <!-- Nested Grid AbsentFrom -->
+      <div style="display: grid; grid-template-columns: 3fr 1fr 1fr; grid-gap: 1em;">
         <input id="dateFrom" type="text" class="datepicker" asp-for="Absence.AbsenceDateFrom" />
+        <label>
+          <input type="radio" asp-for="Absence.FromAfternoon" value="false" checked />
+          <span>Morgen</span>
+        </label>
+        <label>
+          <input type="radio" asp-for="Absence.FromAfternoon" value="true" />
+          <span>Nachmittag</span>
+        </label>
+
         <span class="red-text" asp-validation-for="Absence.AbsenceDateFrom"></span>
       </div>
 
-      <div><span>Abwesend bis:</span></div>
-      <div>
+      <span>Abwesend bis:</span>
+
+      <!-- Nested Grid AbsentTo -->
+      <div style="display: grid; grid-template-columns: 3fr 1fr 1fr; grid-gap: 1em;">
         <input id="dateTo" type="text" class="datepicker" asp-for="Absence.AbsenceDateTo" />
+        <label>
+          <input type="radio" asp-for="Absence.ToAfternoon" value="false" />
+          <span>Morgen</span>
+        </label>
+        <label>
+          <input type="radio" asp-for="Absence.ToAfternoon" value="true" checked />
+          <span>Nachmittag</span>
+        </label>
+
         <span class="red-text" asp-validation-for="Absence.AbsenceDateTo"></span>
       </div>
 
-      <div><span>Ganzer Tag</span></div>
-      <div style="display: grid; grid-template-columns: auto auto 1fr auto 1fr; grid-column-gap: 1em;">
-        <!-- label wrapper and empty span is required for materialize -->
-        <label>
-          <input type="checkbox" class="filled-in" asp-for="Absence.FullDay" />
-          <span></span>
-        </label>
-        <span>Zeit von:</span>
-        <input id="timeFrom" type="text" class="timepicker" asp-for="Absence.AbsenceTimeFrom" />
-        <span>Zeit bis:</span>
-        <input id="timeTo" type="text" class="timepicker" asp-for="Absence.AbsenceTimeTo" />
-        <div></div>
-        <span class="red-text" asp-validation-for="Absence.AbsenceTimeFrom" style="grid-column: 2 / span 2;"></span>
-        <span class="red-text" asp-validation-for="Absence.AbsenceTimeTo" style="grid-column: 4 / span 2"></span>
-      </div>
-
-      <div><span>Negative Tage</span></div>
+      <span>Negative Tage</span>
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
@@ -46,7 +51,7 @@
       </div>
 
 
-      <div><span>Grund:</span></div>
+      <span>Grund:</span>
       <!-- nested Grid -->
       <div id="reasonGrid" style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 1em;">
         @foreach (var item in Model.reasons)
@@ -64,11 +69,11 @@
         <span class="red-text" asp-validation-for="Absence.OtherReason"></span>
       </div>
 
-      <div><span>Ist i.O.:</span></div>
+      <span>Ist i.O.:</span>
       <div>
         <!-- label wrapper and empty span is required for materialize -->
         <label>
-          @if (User.IsInRole("Advanced") || User.IsInRole("High"))
+          @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
           {
             <input id="approved" type="checkbox" class="filled-in" asp-for="Absence.Approved" />
           } else

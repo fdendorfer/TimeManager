@@ -110,23 +110,25 @@ namespace TimeManager.Extensions
               row.CreateCell(colNum).SetCellFormula(formula);
             }
 
-            // Calendar week rows
+            // Row 5+
             // columnPerUsers stores all users of current year and adds a string with a number of each holiday for a person, where the poition in the string is the week
-            var columnPerUser = new Dictionary<string, string>();
+            var columnPerUser = new Dictionary<string, Decimal[]>();
 
             foreach (var user in usersThisYear)
             {
-              columnPerUser.Add(user.Username, new string('0', totalWeeks));
+              columnPerUser.Add(user.Username, new Decimal[totalWeeks]);
 
               var absences = db.Absence.Where(a => (a.IdUser == user.ID) && (a.AbsentFrom.Year == year) && (user.Deactivated == false)).ToList();
-              var daysInWeeks = new int[totalWeeks];
+              var daysInWeeks = columnPerUser.GetValueOrDefault(user.Username);
 
               foreach (var a in absences)
               {
+                // Almost identical to Post Overtime OwnTimes.cshtml
                 // https://stackoverflow.com/questions/13440595/get-list-of-dates-from-startdate-to-enddate
-                //Counts days between a.AbsentFrom and a.AbsentTo
-                IEnumerable<double> daysToAdd = Enumerable.Range(0, (a.AbsentTo - a.AbsentFrom).Days + 1).ToList().ConvertAll(d => (double)d);
-                IEnumerable<DateTime> ListOfDates = daysToAdd.Select(a.AbsentFrom.AddDays).ToList();
+                // Creates a List with each number from 0 to the count of days between AbsentFrom and AbsentTo
+                List<double> daysToAdd = Enumerable.Range(0, (a.AbsentTo - a.AbsentFrom).Days + 1).ToList().ConvertAll(d => (double)d);
+                // Creates a List with every date between and including AbsentFrom and AbsentTo
+                List<DateTime> ListOfDates = daysToAdd.Select(a.AbsentFrom.AddDays).ToList();
 
                 foreach (var date in ListOfDates)
                 {
@@ -141,8 +143,16 @@ namespace TimeManager.Extensions
                     }
                   }
                 }
+
+                // Subtract or add, depending on a.Negative, half a day from AbsentFrom, if FromAfternoon is true and AbsentFrom is not on a weekend
+                if (a.FromAfternoon && a.AbsentFrom.DayOfWeek != DayOfWeek.Saturday && a.AbsentFrom.DayOfWeek != DayOfWeek.Sunday)
+                  daysInWeeks[GetWeek(a.AbsentFrom) - 1] = a.Negative ? daysInWeeks[GetWeek(a.AbsentFrom) - 1] + (Decimal)0.5 : daysInWeeks[GetWeek(a.AbsentFrom) - 1] - (Decimal)0.5;
+
+                // Subtract or add, depending on a.Negative, half a day from AbsentTo, if ToAfternoon is true and AbsentTo is not on a weekend
+                if (!a.ToAfternoon && a.AbsentTo.DayOfWeek != DayOfWeek.Saturday && a.AbsentTo.DayOfWeek != DayOfWeek.Sunday)
+                  daysInWeeks[GetWeek(a.AbsentTo) - 1] = a.Negative ? daysInWeeks[GetWeek(a.AbsentTo) - 1] + (Decimal)0.5 : daysInWeeks[GetWeek(a.AbsentTo) - 1] - (Decimal)0.5;
               }
-              columnPerUser[user.Username] = string.Join("", daysInWeeks);
+              columnPerUser[user.Username] = daysInWeeks;
             }
 
             // Writes all holidays from all weeks into rows
@@ -153,7 +163,7 @@ namespace TimeManager.Extensions
               row.CreateCell(colNum).SetCellValue("KW" + (i + 1).ToString("D2")); //ToString("D2") for 2 digits like 01
               foreach (var user in columnPerUser)
               {
-                row.CreateCell(++colNum).SetCellValue(Int32.Parse(user.Value[i].ToString()));
+                row.CreateCell(++colNum).SetCellValue(Double.Parse(user.Value[i].ToString()));
               }
             }
 
@@ -336,13 +346,14 @@ namespace TimeManager.Extensions
               colNum = 0;
               row.CreateCell(colNum).SetCellValue(overtime.Date.ToShortDateString());
               row.CreateCell(++colNum).SetCellValue(overtime.Customer);
-              row.CreateCell(++colNum).SetCellValue("");
+              row.CreateCell(++colNum).SetCellValue(overtime.Approved ? "ok" : "");
               row.CreateCell(++colNum).SetCellValue(overtime.Hours.ToString());
               var rate = db.OvertimeDetail.Where(od => od.ID == overtime.IdOvertimeDetail).Select(s => s.Rate);
               row.CreateCell(++colNum).SetCellValue(Convert.ToDouble(rate.Single()));
               row.CreateCell(++colNum).SetCellFormula($"IF(C{rowNum + 1}=\"ok\",D{rowNum + 1}*E{rowNum + 1},0)");
             }
 
+            // FD : THIS NEEDS TO GO TO TOP ROW ----------------------------------------------------------------------------------------------------------------------------
             // Last row
             rowNum = 49; // Is row 50 in excel
             row = sh.CreateRow(rowNum);
