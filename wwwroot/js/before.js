@@ -244,10 +244,11 @@ function overtimeEdit(id) {
       $(inputs[0]).val(json.Date);
       $(inputs[1]).val(json.Hours);
       $(inputs[2]).val(json.Customer);
+      $(inputs[4]).val(json.Approved);
 
       $('#overtimeWindow select').find(`option[value="${json.IdOvertimeDetail.toUpperCase()}"]`).prop('selected', true);
       $('#overtimeWindow select').formSelect();
-      $(inputs[4]).val(json.ID);
+      $(inputs[5]).val(json.ID);
     }
   });
 }
