@@ -3,6 +3,15 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="jQuery" Version="3.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />

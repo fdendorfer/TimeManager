@@ -1,0 +1,26 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/materialize.min.css",
+    "inputFiles": [
+      "wwwroot/css/materialize.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/after.min.js",
+    "inputFiles": [
+      "wwwroot/js/after.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/before.min.js",
+    "inputFiles": [
+      "wwwroot/js/before.js"
+    ]
+  }
+]

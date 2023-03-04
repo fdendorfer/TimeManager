@@ -110,23 +110,25 @@ namespace TimeManager.Extensions
               row.CreateCell(colNum).SetCellFormula(formula);
             }
 
-            // Calendar week rows
+            // Row 5+
             // columnPerUsers stores all users of current year and adds a string with a number of each holiday for a person, where the poition in the string is the week
-            var columnPerUser = new Dictionary<string, string>();
+            var columnPerUser = new Dictionary<string, Decimal[]>();
 
             foreach (var user in usersThisYear)
             {
-              columnPerUser.Add(user.Username, new string('0', totalWeeks));
+              columnPerUser.Add(user.Username, new Decimal[totalWeeks]);
 
               var absences = db.Absence.Where(a => (a.IdUser == user.ID) && (a.AbsentFrom.Year == year) && (user.Deactivated == false)).ToList();
-              var daysInWeeks = new int[totalWeeks];
+              var daysInWeeks = columnPerUser.GetValueOrDefault(user.Username);
 
               foreach (var a in absences)
               {
+                // Almost identical to Post Overtime OwnTimes.cshtml
                 // https://stackoverflow.com/questions/13440595/get-list-of-dates-from-startdate-to-enddate
-                //Counts days between a.AbsentFrom and a.AbsentTo
-                IEnumerable<double> daysToAdd = Enumerable.Range(0, (a.AbsentTo - a.AbsentFrom).Days + 1).ToList().ConvertAll(d => (double)d);
-                IEnumerable<DateTime> ListOfDates = daysToAdd.Select(a.AbsentFrom.AddDays).ToList();
+                // Creates a List with each number from 0 to the count of days between AbsentFrom and AbsentTo
+                List<double> daysToAdd = Enumerable.Range(0, (a.AbsentTo - a.AbsentFrom).Days + 1).ToList().ConvertAll(d => (double)d);
+                // Creates a List with every date between and including AbsentFrom and AbsentTo
+                List<DateTime> ListOfDates = daysToAdd.Select(a.AbsentFrom.AddDays).ToList();
 
                 foreach (var date in ListOfDates)
                 {
@@ -141,8 +143,16 @@ namespace TimeManager.Extensions
                     }
                   }
                 }
+
+                // Subtract or add, depending on a.Negative, half a day from AbsentFrom, if FromAfternoon is true and AbsentFrom is not on a weekend
+                if (a.FromAfternoon && a.AbsentFrom.DayOfWeek != DayOfWeek.Saturday && a.AbsentFrom.DayOfWeek != DayOfWeek.Sunday)
+                  daysInWeeks[GetWeek(a.AbsentFrom) - 1] = a.Negative ? daysInWeeks[GetWeek(a.AbsentFrom) - 1] + (Decimal)0.5 : daysInWeeks[GetWeek(a.AbsentFrom) - 1] - (Decimal)0.5;
+
+                // Subtract or add, depending on a.Negative, half a day from AbsentTo, if ToAfternoon is true and AbsentTo is not on a weekend
+                if (!a.ToAfternoon && a.AbsentTo.DayOfWeek != DayOfWeek.Saturday && a.AbsentTo.DayOfWeek != DayOfWeek.Sunday)
+                  daysInWeeks[GetWeek(a.AbsentTo) - 1] = a.Negative ? daysInWeeks[GetWeek(a.AbsentTo) - 1] + (Decimal)0.5 : daysInWeeks[GetWeek(a.AbsentTo) - 1] - (Decimal)0.5;
               }
-              columnPerUser[user.Username] = string.Join("", daysInWeeks);
+              columnPerUser[user.Username] = daysInWeeks;
             }
 
             // Writes all holidays from all weeks into rows
@@ -153,7 +163,7 @@ namespace TimeManager.Extensions
               row.CreateCell(colNum).SetCellValue("KW" + (i + 1).ToString("D2")); //ToString("D2") for 2 digits like 01
               foreach (var user in columnPerUser)
               {
-                row.CreateCell(++colNum).SetCellValue(Int32.Parse(user.Value[i].ToString()));
+                row.CreateCell(++colNum).SetCellValue(Double.Parse(user.Value[i].ToString()));
               }
             }
 
@@ -268,8 +278,6 @@ namespace TimeManager.Extensions
           // Workbook
           var wb = new XSSFWorkbook();
 
-          // Style
-
           // All users which are used by Overtimes in this year
           var year = DateTime.Now.Year;
           var users = (from u in db.User
@@ -325,7 +333,25 @@ namespace TimeManager.Extensions
             RegionUtil.SetBorderBottom(border, region, sh, wb);
             RegionUtil.SetBorderLeft(border, region, sh, wb);
 
-            // Row 2+
+            // Row 2
+            row = sh.CreateRow(++rowNum);
+            colNum = 0;
+            row.CreateCell(colNum);
+            row.CreateCell(++colNum).SetCellValue("TOTAL");
+            row.CreateCell(++colNum);
+            row.CreateCell(++colNum).SetCellFormula("F3/8.5");
+            row.CreateCell(++colNum).SetCellValue("<<<<");
+            row.CreateCell(++colNum); //.SetCellFormula($"SUM(F4:F{sh.LastRowNum + 1})"); Value set after overtimes have been written so LastRowNum is correct
+            var style = (XSSFCellStyle)wb.CreateCellStyle();
+            var font = wb.CreateFont();
+            font.FontHeight = wb.GetFontAt(0).FontHeight;
+            font.IsBold = true;
+            style.SetFont(font);
+            style.BorderTop = style.BorderRight = style.BorderBottom = style.BorderLeft = BorderStyle.Medium;
+            foreach (var cell in row)
+              cell.CellStyle = style;
+
+            // Row 3+
             var overtimes = (from o in db.Overtime
                              where (o.Date.Year == year) && (o.IdUser == user.ID)
                              orderby o.Date
@@ -336,35 +362,21 @@ namespace TimeManager.Extensions
               colNum = 0;
               row.CreateCell(colNum).SetCellValue(overtime.Date.ToShortDateString());
               row.CreateCell(++colNum).SetCellValue(overtime.Customer);
-              row.CreateCell(++colNum).SetCellValue("");
+              row.CreateCell(++colNum).SetCellValue(overtime.Approved ? "ok" : "");
               row.CreateCell(++colNum).SetCellValue(overtime.Hours.ToString());
               var rate = db.OvertimeDetail.Where(od => od.ID == overtime.IdOvertimeDetail).Select(s => s.Rate);
               row.CreateCell(++colNum).SetCellValue(Convert.ToDouble(rate.Single()));
               row.CreateCell(++colNum).SetCellFormula($"IF(C{rowNum + 1}=\"ok\",D{rowNum + 1}*E{rowNum + 1},0)");
             }
 
-            // Last row
-            rowNum = 49; // Is row 50 in excel
-            row = sh.CreateRow(rowNum);
-            colNum = 1;
-            row.CreateCell(colNum).SetCellValue("TOTAL");
-            row.CreateCell(colNum += 2).SetCellFormula("F50/8.5");
-            row.CreateCell(++colNum).SetCellValue("<<<<");
-            row.CreateCell(++colNum).SetCellFormula("SUM(F3:F49)");
-            var style = (XSSFCellStyle)wb.CreateCellStyle();
-            var font = wb.CreateFont();
-            font.FontHeight = wb.GetFontAt(0).FontHeight;
-            font.IsBold = true;
-            style.SetFont(font);
-            foreach (var cell in row)
-              cell.CellStyle = style;
-
+            // Row 2 Col 5 gets value here, because it relies on number of written overtimes
+            sh.GetRow(2).GetCell(5).SetCellFormula($"SUM(F4:F{sh.LastRowNum + 1})");
 
             // Styles for entry rows
             var cs = (XSSFCellStyle)wb.CreateCellStyle();
             cs.BorderTop = cs.BorderRight = cs.BorderBottom = cs.BorderLeft = BorderStyle.Thin;
             border = (int)BorderStyle.Thin;
-            for (var i = 2; i <= 48; i++)
+            for (var i = 3; i <= sh.LastRowNum; i++)
             {
               var r = sh.GetRow(i);
               if (r != null)
@@ -372,7 +384,7 @@ namespace TimeManager.Extensions
                   cell.CellStyle = cs;
             }
 
-            // Conditional formatting
+            // Conditional formatting user sheets
             IConditionalFormattingRule rule;
             IPatternFormatting pf;
 
@@ -381,7 +393,7 @@ namespace TimeManager.Extensions
             pf.FillBackgroundColor = IndexedColors.LightTurquoise.Index;
             pf.FillPattern = FillPattern.SolidForeground;
             sh.SheetConditionalFormatting.AddConditionalFormatting(
-              new[] { CellRangeAddress.ValueOf("A50:F50"), CellRangeAddress.ValueOf("F3:F50") },
+              new[] { CellRangeAddress.ValueOf("A3:F3"), CellRangeAddress.ValueOf($"F4:F{sh.LastRowNum + 1}") },
               rule
             );
 
@@ -390,8 +402,8 @@ namespace TimeManager.Extensions
             row = sh.CreateRow(sh.LastRowNum + 1);
             colNum = 0;
             row.CreateCell(colNum).SetCellValue(user.Username);
-            row.CreateCell(++colNum).SetCellFormula(user.Username + "!$F$50");
-            row.CreateCell(++colNum).SetCellFormula(user.Username + "!$D$50");
+            row.CreateCell(++colNum).SetCellFormula(user.Username + "!$F$3");
+            row.CreateCell(++colNum).SetCellFormula(user.Username + "!$D$3");
             // Borders for these cells
             style = null;
             style = (XSSFCellStyle)wb.CreateCellStyle();
@@ -400,7 +412,7 @@ namespace TimeManager.Extensions
             foreach (var cell in row.Cells)
               cell.CellStyle = style;
 
-            // Conditional formatting
+            // Conditional formatting overview sheet
             rule = sh.SheetConditionalFormatting.CreateConditionalFormattingRule(ComparisonOperator.NotBetween, "0", "5");
             pf = rule.CreatePatternFormatting();
             pf.FillBackgroundColor = IndexedColors.Red.Index;

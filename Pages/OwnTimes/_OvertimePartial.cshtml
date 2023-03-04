@@ -24,6 +24,20 @@
       <span class="red-text" asp-validation-for="Overtime.Customer" style="display: block;"></span>
       <span>Zuschlag:</span>
       <select asp-for="Overtime.IdOvertimeDetail" asp-items="Model.rates"></select>
+      <span>Ist I.O.:</span>
+      <div style="display: inline">
+        <!-- label wrapper and empty span is required for materialize -->
+        <label>
+          @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+          {
+            <input id="approved" type="checkbox" class="filled-in" asp-for="Overtime.Approved" />
+          } else
+          {
+            <input id="approved" type="checkbox" class="filled-in" asp-for="Overtime.Approved" disabled />
+          }
+          <span style="margin-left: 1em; width: auto; height: 1em;"></span>
+        </label>
+      </div>
       <input type="hidden" asp-for="Overtime.ID" />
     </form>
   </div>

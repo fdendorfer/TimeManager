@@ -19,5 +19,7 @@ namespace TimeManager.Model
     [Required(ErrorMessage = "Kunde darf nicht leer sein")]
     public string Customer { get; set; }
 
+    public bool Approved { get; set; }
+
   }
 }
